@@ -558,7 +558,7 @@ function renderList(){
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="info-label">고객사</span> <span class="info-value">${esc(item.company)}</span></div>
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="info-label">담당자</span> <span class="info-value">${esc(item.contact)}</span></div>
       ${item.contactPhone?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><span class="info-label">휴대폰</span> <span onclick="event.stopPropagation();openSMS('${item.contactPhone}')" style="color:var(--primary);cursor:pointer;text-decoration:underline">${esc(item.contactPhone)}</span></div>`:''}
-      ${item.contactEmail?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="info-label">이메일</span> <span onclick="event.stopPropagation();window.open('https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(item.contactEmail)}','gmailCompose','popup,width=640,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no')" style="color:var(--primary);cursor:pointer;text-decoration:underline">${esc(item.contactEmail)}</span></div>`:''}
+      ${item.contactEmail?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="info-label">이메일</span> <span onclick="event.stopPropagation();openGmail('${item.contactEmail}')" style="color:var(--primary);cursor:pointer;text-decoration:underline">${esc(item.contactEmail)}</span></div>`:''}
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="4" y="18" font-size="18" font-weight="bold" fill="currentColor" stroke="none">₩</text></svg><span class="info-label">예상매출</span> <span class="info-value opp-revenue-val">${item.revenue>0?fmtCur(item.revenue):'-'}</span></div>
     </div>`;
     // Info row 2
@@ -1149,12 +1149,15 @@ function closeConfirm(){document.getElementById('confirmOverlay').classList.remo
 function showToast(m,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast '+type;t.textContent=m;c.appendChild(t);setTimeout(()=>t.remove(),3000)}
 // Open Google Messages Web with phone number copied
 function openSMS(phone){
+  const w=window.open('https://messages.google.com/web/conversations','googleSMS','width=480,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes');
   const ta=document.createElement('textarea');
   ta.value=phone;ta.style.cssText='position:fixed;left:-9999px';
   document.body.appendChild(ta);ta.select();
   document.execCommand('copy');document.body.removeChild(ta);
   showToast('📋 '+phone+' 복사완료! 붙여넣기(Ctrl+V)하세요','info');
-  setTimeout(()=>window.open('https://messages.google.com/web/conversations','googleSMS','popup,width=480,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no'),300);
+}
+function openGmail(email){
+  window.open('https://mail.google.com/mail/?view=cm&to='+encodeURIComponent(email),'gmailCompose','width=640,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes');
 }
 function fmtCur(n){return n?new Intl.NumberFormat('ko-KR').format(n)+'원':'0원'}
 function fmtEduHours(v){const n=Number(v)||0;const h=Math.floor(n);const m=Math.round((n-h)*60);if(h&&m)return h+'시간 '+m+'분';if(h)return h+'시간';if(m)return m+'분';return '';}
