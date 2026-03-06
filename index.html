@@ -1152,11 +1152,11 @@ function closeConfirm(){document.getElementById('confirmOverlay').classList.remo
 function showToast(m,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast '+type;t.textContent=m;c.appendChild(t);setTimeout(()=>t.remove(),3000)}
 // Open Google Messages Web with phone number copied
 function openSMS(phone){
-  const w=window.open('https://messages.google.com/web/conversations','googleSMS','width=480,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes');
   const ta=document.createElement('textarea');
   ta.value=phone;ta.style.cssText='position:fixed;left:-9999px';
-  document.body.appendChild(ta);ta.select();
+  document.body.appendChild(ta);ta.focus();ta.select();
   document.execCommand('copy');document.body.removeChild(ta);
+  window.open('https://messages.google.com/web/conversations/new','googleSMS','width=480,height=720,top=100,left=100,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes');
   showToast('📋 '+phone+' 복사완료! 붙여넣기(Ctrl+V)하세요','info');
 }
 function openGmail(email){
