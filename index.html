@@ -802,8 +802,9 @@ function renderInlineEdit(safeId){
   });
   h+=`</div></div>`;
   h+=buildCompactForm(item);
-  h+=`<div style="display:flex;gap:10px;justify-content:flex-end;padding-top:12px;border-top:1px solid #F1F5F9">`;
-  h+=`<button class="btn btn-primary" style="background:var(--red);border-color:var(--red);margin-right:auto" onclick="shareToGoogleCalendar()">📅 구글달력 공유&저장</button>`;
+  h+=`<div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;padding-top:12px;border-top:1px solid #F1F5F9;flex-wrap:wrap">`;
+  h+=`<button class="btn btn-primary" style="background:var(--red);border-color:var(--red)" onclick="shareToGoogleCalendar()">📅 구글달력 공유&저장</button>`;
+  h+=`<div style="display:flex;align-items:center;gap:4px;margin-right:auto;font-size:.82rem;color:var(--text-sec)"><span>등록일</span><input type="text" id="field_createdAt" value="${fmtDate(item.createdAt)}" style="width:90px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:.82rem;text-align:center" placeholder="2026.03.03"></div>`;
   h+=`<button class="btn btn-outline" onclick="closeInlineEdit('${safeId}')">취소</button>`;
   h+=`<button class="btn btn-primary" onclick="handleInlineSave('${item.id}')">저장</button>`;
   h+=`</div>`;
@@ -823,6 +824,8 @@ function readFormValues(item){
   keys.forEach(k=>{const el=document.getElementById('field_'+k);if(el){let v=el.value;if(commaKeys.includes(k))v=parseComma(v);else if(numKeys.includes(k))v=Number(v)||0;item[k]=v}});
   item.instructor='김종혁';
   if(!item.title&&item.company&&item.training)item.title=item.company+'/'+item.training;
+  const caEl=document.getElementById('field_createdAt');
+  if(caEl&&caEl.value)item.createdAt=caEl.value;
   item.updatedAt=new Date().toISOString();
 }
 
