@@ -1046,8 +1046,16 @@ function confirmDelete(id){
 }
 function confirmDeleteCard(id){
   showConfirm('삭제 확인','삭제하실겁니까? 💀',async()=>{
+    // 삭제 전에 다음 항목 찾기
+    const curIdx=state.filteredData.findIndex(d=>d.id===id);
+    const nextItem=(curIdx!==-1 && curIdx<state.filteredData.length-1)?state.filteredData[curIdx+1]:null;
     const saved=await saveToSheet('delete',null,id);
-    if(saved){state.data=state.data.filter(d=>d.id!==id);applyFilters()}
+    if(saved){
+      state.data=state.data.filter(d=>d.id!==id);applyFilters();
+      if(nextItem){
+        setTimeout(()=>{const el=document.getElementById('card-'+nextItem.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},200);
+      }
+    }
   });
 }
 
