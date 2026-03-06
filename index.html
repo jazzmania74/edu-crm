@@ -902,7 +902,7 @@ function buildCompactForm(item){
   h+=`<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">`;
   h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>강사료</label><input type="text" id="field_lectureFee" value="${fmtComma(item.lectureFee)}" oninput="fmtCommaInput(this);autoRevenue()" inputmode="numeric"></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>매출액 (자동)</label><input type="text" id="field_revenue" value="${fmtComma(item.revenue)}" readonly style="background:#f9fafb;font-weight:600;color:var(--primary)"></div>`;
-  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>매출유형</label><select id="field_revType"><option value="교육매출" ${(item.revType||'교육매출')==='교육매출'?'selected':''}>교육매출</option><option value="컨설팅매출" ${item.revType==='컨설팅매출'?'selected':''}>컨설팅매출</option><option value="콘텐츠매출" ${item.revType==='콘텐츠매출'?'selected':''}>콘텐츠매출</option><option value="기타매출" ${item.revType==='기타매출'?'selected':''}>기타매출</option></select></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>매출유형</label><select id="field_revType"><option value="교육매출" ${(item.revType||'교육매출')==='교육매출'?'selected':''}>교육매출</option><option value="컨설팅매출" ${item.revType==='컨설팅매출'?'selected':''}>컨설팅매출</option><option value="콘텐츠매출" ${item.revType==='콘텐츠매출'?'selected':''}>콘텐츠매출</option><option value="커미션매출" ${item.revType==='커미션매출'?'selected':''}>커미션매출</option><option value="기타매출" ${item.revType==='기타매출'?'selected':''}>기타매출</option></select></div>`;
   h+=`</div></div>`;
   // 기타 정보
   h+=`<div style="margin-bottom:16px">`;
