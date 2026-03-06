@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>교육CRM 영업기회 관리기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#2563EB;--primary-light:#DBEAFE;--primary-dark:#1D4ED8;
+  --surface:#fff;--bg:#F5F5F5;--text:#1E293B;--text-sec:#64748B;--text-light:#94A3B8;
+  --border:#E2E8F0;--radius:8px;--radius-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);
+  --orange:#F97316;--green:#16A34A;--red:#EF4444;--purple:#7C3AED;
+  --pipe-active:#8B7355;--pipe-inactive:#F3F4F6;--pipe-inactive-text:#9CA3AF;
+}
+html{font-size:14px}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit}
+a{color:var(--primary);text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:20px 16px}
+
+/* ===== CONNECTION ===== */
+.conn-section{background:var(--surface);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;border-left:4px solid var(--purple);box-shadow:var(--shadow)}
+.conn-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;cursor:pointer;user-select:none}
+.conn-header:hover{background:#FAFAFA}
+.conn-title{display:flex;align-items:center;gap:10px;font-weight:600;font-size:.95rem}
+.conn-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.conn-dot.on{background:var(--green)}.conn-dot.off{background:var(--red)}
+.conn-arrow{transition:transform .3s;color:var(--text-light);font-size:1rem}
+.conn-arrow.open{transform:rotate(180deg)}
+.conn-body{padding:0 20px 20px;display:none}.conn-body.open{display:block}
+.conn-body .form-row{display:flex;gap:10px;align-items:flex-end}
+.conn-body input[type="url"]{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);outline:none;font-size:.9rem}
+.conn-body input[type="url"]:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.conn-help{background:#F0EAFF;border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:.8rem;color:#5B21B6;line-height:1.8}
+.conn-help ol{padding-left:18px}.conn-help code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px}
+
+/* ===== TABS ===== */
+.tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:20px;background:var(--surface);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.tab-btn{padding:16px;text-align:center;font-weight:600;font-size:1rem;color:var(--text-sec);transition:all .2s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#FAFAFA}
+.tab-btn.active{color:#fff;background:var(--primary);border-bottom-color:var(--primary-dark)}
+.tab-btn .tab-count{background:rgba(255,255,255,.3);padding:2px 10px;border-radius:12px;font-size:.8rem;margin-left:6px}
+
+/* ===== STAT CARDS ===== */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border-radius:var(--radius-lg);padding:20px;text-align:center;cursor:pointer;border:2px solid var(--border);transition:all .2s;box-shadow:var(--shadow)}
+.stat-card:hover{border-color:var(--text-light);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card.active{border-color:var(--primary);background:var(--primary-light)}
+.stat-card .stat-label{font-size:.85rem;color:var(--text-sec);font-weight:500;margin-bottom:8px}
+.stat-card .stat-value{font-size:2.2rem;font-weight:700;line-height:1}
+.stat-card .stat-sub{font-size:.75rem;color:var(--text-light);margin-top:6px}
+.stat-card[data-filter="all"] .stat-value{color:var(--text)}
+.stat-card[data-filter="progress"] .stat-value{color:var(--orange)}
+.stat-card[data-filter="won"] .stat-value{color:var(--green)}
+.stat-card[data-filter="failed"] .stat-value{color:var(--red)}
+
+/* ===== SEARCH ===== */
+.search-section{background:var(--surface);border-radius:var(--radius-lg);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.search-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;cursor:pointer;user-select:none}
+.search-header:hover{background:#FAFAFA}
+.search-title{display:flex;align-items:center;gap:8px;font-weight:500;font-size:.95rem;color:var(--text-sec)}
+.search-arrow{transition:transform .3s;color:var(--text-light)}
+.search-arrow.open{transform:rotate(90deg)}
+.search-body{padding:0 20px 16px;display:none}.search-body.open{display:block}
+.search-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.search-group{display:flex;flex-direction:column;gap:4px}
+.search-group label{font-size:.8rem;font-weight:500;color:var(--text-light)}
+.search-group input,.search-group select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);outline:none;font-size:.85rem}
+.search-group input:focus,.search-group select:focus{border-color:var(--primary)}
+.search-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius);font-weight:500;font-size:.875rem;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+.btn-outline{border:1px solid var(--border);color:var(--text-sec);background:var(--surface)}.btn-outline:hover{background:var(--bg)}
+.btn-sm{padding:6px 12px;font-size:.8rem}
+.btn-danger{color:var(--red)}.btn-danger:hover{background:#FEF2F2}
+.btn-success{background:var(--green);color:#fff}
+
+/* ===== OPP CARD (main design) ===== */
+.opp-list{display:flex;flex-direction:column;gap:16px}
+.opp-card{background:var(--surface);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);transition:all .2s}
+.opp-card:hover{box-shadow:var(--shadow-md)}
+
+/* Card Header */
+.opp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.opp-stage-badge{display:inline-block;padding:4px 14px;border-radius:4px;font-size:.8rem;font-weight:600}
+.opp-top-actions{display:flex;gap:8px}
+.opp-top-actions .btn-sm{font-size:.9rem;padding:8px 18px;border-radius:var(--radius);font-weight:700}
+.btn-quote{background:var(--primary);color:#fff;border:1px solid var(--primary)}
+.btn-quote:hover{background:var(--primary-dark)}
+.btn-edit{background:#FEF9C3;color:var(--text);border:1px solid #FACC15;font-weight:700}
+.btn-edit:hover{background:#FEF08A}
+
+/* Card Title */
+.opp-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+
+/* Pipeline Progress - Arrow Design */
+.pipeline{display:flex;margin-bottom:18px;gap:0}
+.pipeline-step{flex:1;text-align:center;padding:10px 4px 8px 16px;background:#D1D5DB;color:#6B7280;font-size:.7rem;font-weight:500;min-width:0;position:relative;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,14px 50%);margin-left:-2px}
+.pipeline-step:first-child{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%);margin-left:0;padding-left:10px;border-radius:5px 0 0 5px}
+.pipeline-step:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,14px 50%);border-radius:0 5px 5px 0}
+.pipeline-step.active{color:#fff;font-weight:700}
+.pipeline-step .step-date{display:block;font-size:.65rem;margin-top:2px;opacity:.9;font-weight:400}
+.pipeline-step .step-label{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px;font-size:.78rem;font-weight:700}
+
+/* Info Rows */
+.opp-info{display:flex;flex-wrap:wrap;gap:8px 20px;padding:10px 0;border-top:1px solid #F1F5F9;font-size:.85rem;color:var(--text-sec)}
+.opp-info:first-of-type{border-top:none}
+.opp-info-item{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.opp-info-item .info-icon{width:16px;height:16px;flex-shrink:0;opacity:.5}
+.opp-info-item .info-label{color:var(--text-light);font-size:.78rem}
+.opp-info-item .info-value{font-weight:500;color:var(--text)}
+.opp-info-item a{color:var(--primary);font-weight:500}
+.opp-revenue-val{color:var(--primary)!important;font-weight:700!important;font-size:.95rem}
+
+/* Note */
+.opp-note-section{margin-top:12px;padding:12px;border:1.5px solid #6B7280;border-radius:8px}
+.opp-note-text{font-size:.83rem;color:var(--text-sec);line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:hidden;transition:max-height .3s ease}
+.opp-note-text:hover{overflow-y:auto}
+.opp-note-text::-webkit-scrollbar{width:10px}.opp-note-text::-webkit-scrollbar-track{background:#f1f1f1;border-radius:5px}.opp-note-text::-webkit-scrollbar-thumb{background:#999;border-radius:5px}.opp-note-text::-webkit-scrollbar-thumb:hover{background:#666}
+.opp-note-text.expanded{max-height:2000px;overflow-y:auto}
+
+/* Inline Edit Panel */
+.opp-edit-panel{display:none;border-top:2px solid var(--primary);margin-top:16px;padding-top:20px;animation:slideDown .3s ease}
+.opp-edit-panel.open{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Contact Search */
+.contact-search-status{padding:10px 14px;background:#F8FAFC;border-radius:8px;margin:8px 0 12px;font-size:.85rem;display:flex;align-items:center;gap:8px}
+.contact-search-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.contact-results{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+.contact-result-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.contact-result-item:last-child{border-bottom:none}
+.contact-result-item:hover{background:var(--primary-light)}
+
+.opp-note-toggle{display:flex;justify-content:flex-end;margin-top:6px}
+.opp-note-toggle button{font-size:.78rem;color:var(--primary);font-weight:500;padding:4px 12px;border:1px solid var(--border);border-radius:4px;background:var(--surface)}
+.opp-note-toggle button:hover{background:var(--bg)}
+
+/* Stage Badge Colors */
+.badge-inquiry{background:#EFF6FF;color:#2563EB}
+.badge-curriculum{background:#F5F3FF;color:#7C3AED}
+.badge-proposal{background:#EEF2FF;color:#4F46E5}
+.badge-quote1{background:#FFFBEB;color:#D97706}
+.badge-quote2{background:#FFF7ED;color:#EA580C}
+.badge-fail{background:#F3F4F6;color:#6B7280}
+.badge-rejected{background:#FEF2F2;color:#DC2626}
+.badge-lost{background:#F3F4F6;color:#6B7280}
+.badge-won{background:#ECFDF5;color:#059669}
+.badge-success{background:#ECFDF5;color:#047857}
+
+/* ===== FORM PANEL ===== */
+.form-panel{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.form-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.form-header h2{font-size:1.1rem;font-weight:700}
+.form-body{padding:24px}
+.form-section{margin-bottom:24px}
+.form-section-title{font-size:.8rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #F1F5F9}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:.8rem;font-weight:500;color:var(--text-sec)}
+.form-group input,.form-group select,.form-group textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);outline:none;transition:all .2s;background:var(--surface)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.form-group textarea{min-height:320px;resize:vertical}
+.form-group input[readonly]{background:var(--bg);color:var(--text-sec)}
+.form-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.stage-selector{display:flex;flex-wrap:wrap;gap:6px}
+.stage-option{padding:7px 14px;border-radius:20px;font-size:.8rem;font-weight:500;cursor:pointer;border:2px solid var(--border);transition:all .2s;color:var(--text-sec)}
+.stage-option:hover{border-color:var(--text-light)}
+.stage-option.selected{color:#fff;border-color:transparent}
+
+/* ===== EMPTY ===== */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-light);background:var(--surface);border-radius:var(--radius-lg)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:12px;opacity:.3}
+.empty-state h3{font-size:1rem;color:var(--text-sec);margin-bottom:6px}
+
+/* ===== TOAST ===== */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius);font-size:.85rem;font-weight:500;box-shadow:var(--shadow-md);animation:toastIn .3s ease,toastOut .3s ease 2.7s forwards;max-width:360px}
+.toast.success{background:#059669;color:#fff}.toast.error{background:#DC2626;color:#fff}.toast.info{background:var(--primary);color:#fff}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+
+/* ===== LOADING ===== */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:3000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.9rem;color:var(--text-sec)}
+
+/* ===== CONFIRM ===== */
+.confirm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:2000;display:none;align-items:center;justify-content:center}
+.confirm-overlay.active{display:flex}
+.confirm-box{background:var(--surface);border-radius:var(--radius-lg);padding:28px;max-width:400px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,.2);text-align:center}
+.confirm-box h3{margin-bottom:10px}.confirm-box p{color:var(--text-sec);font-size:.9rem;margin-bottom:24px}
+.confirm-actions{display:flex;gap:10px;justify-content:center}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .stat-cards{grid-template-columns:repeat(2,1fr);gap:10px}
+  .pipeline-step{font-size:.58rem;padding:8px 2px 6px 14px}
+  .opp-info{gap:6px 12px}
+  .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stat-card .stat-value{font-size:1.6rem}
+  .pipeline{flex-wrap:wrap}
+  .pipeline-step{flex:0 0 calc(25% - 3px);margin-bottom:3px}
+}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- CONNECTION SETTINGS -->
+  <div class="conn-section" id="connSection">
+    <div class="conn-header" onclick="toggleConn()">
+      <div class="conn-title">
+        <span class="conn-dot off" id="connDot"></span>
+        <span id="connLabel">연동 설정 (Google Sheets)</span>
+      </div>
+      <span class="conn-arrow" id="connArrow">&#9660;</span>
+    </div>
+    <div class="conn-body" id="connBody">
+      <div class="form-row">
+        <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+        <button class="btn btn-outline btn-sm" onclick="testConnection()">테스트</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">저장</button>
+      </div>
+      <div class="conn-help">
+        <strong>설정 방법:</strong>
+        <ol>
+          <li>구글 시트 &rarr; <code>확장 프로그램</code> &rarr; <code>Apps Script</code></li>
+          <li><code>apps-script.js</code> 코드를 붙여넣기 후 저장</li>
+          <li><code>배포</code> &rarr; <code>새 배포</code> &rarr; 유형: <code>웹 앱</code></li>
+          <li>액세스: <code>모든 사용자</code> &rarr; 배포</li>
+          <li>생성된 URL을 위에 붙여넣기</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn" id="tabNew" onclick="switchTab('new')">새 영업기회</button>
+    <button class="tab-btn active" id="tabList" onclick="switchTab('list')">영업기회 목록 <span class="tab-count" id="tabCount">0</span></button>
+  </div>
+
+  <!-- LIST PANEL -->
+  <div id="listPanel">
+    <div class="stat-cards" id="statCards">
+      <div class="stat-card active" data-filter="all" onclick="filterByCard('all')">
+        <div class="stat-label">전체 영업기회</div>
+        <div class="stat-value" id="statAll">0</div>
+      </div>
+      <div class="stat-card" data-filter="progress" onclick="filterByCard('progress')">
+        <div class="stat-label">진행중</div>
+        <div class="stat-value" id="statProgress">0</div>
+        <div class="stat-sub" id="statProgressSub"></div>
+      </div>
+      <div class="stat-card" data-filter="won" onclick="filterByCard('won')">
+        <div class="stat-label">계약성공</div>
+        <div class="stat-value" id="statWon">0</div>
+        <div class="stat-sub" id="statWonSub"></div>
+      </div>
+      <div class="stat-card" data-filter="failed" onclick="filterByCard('failed')">
+        <div class="stat-label">실패/거절</div>
+        <div class="stat-value" id="statFailed">0</div>
+        <div class="stat-sub" id="statFailedSub"></div>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="search-header" onclick="toggleSearch()">
+        <div class="search-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          검색조건
+        </div>
+        <span class="search-arrow" id="searchArrow">&#9654;</span>
+      </div>
+      <div class="search-body" id="searchBody">
+        <div class="search-grid">
+          <div class="search-group"><label>회사명</label><input type="text" id="srcCompany" placeholder="회사명"></div>
+          <div class="search-group"><label>담당자</label><input type="text" id="srcContact" placeholder="담당자"></div>
+          <div class="search-group"><label>교육과정</label><input type="text" id="srcTraining" placeholder="교육과정"></div>
+          <div class="search-group"><label>단계</label><select id="srcStage"><option value="">전체</option></select></div>
+          <div class="search-group"><label>강사</label><input type="text" id="srcInstructor" placeholder="강사"></div>
+          <div class="search-group"><label>등록자</label><input type="text" id="srcRegistrant" placeholder="등록자"></div>
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-outline btn-sm" onclick="clearSearch()">초기화</button>
+          <button class="btn btn-primary btn-sm" onclick="doSearch()">검색</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="oppListContainer"></div>
+  </div>
+
+  <!-- FORM PANEL -->
+  <div id="formPanel" class="hidden">
+    <div class="form-panel">
+      <div class="form-header">
+        <h2 id="formTitle">새 영업기회</h2>
+        <button class="btn btn-outline btn-sm" onclick="switchTab('list')">&#10005; 닫기</button>
+      </div>
+      <div class="form-body" id="formBody"></div>
+      <div class="form-footer" id="formFooter"></div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-overlay hidden" id="loadingOverlay"><div class="spinner"></div><div class="loading-text" id="loadingText">데이터 로딩 중...</div></div>
+<div class="confirm-overlay" id="confirmOverlay"><div class="confirm-box"><h3 id="confirmTitle">확인</h3><p id="confirmMsg"></p><div class="confirm-actions"><button class="btn btn-outline" id="confirmCancel">취소</button><button class="btn btn-primary" id="confirmOk">확인</button></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ================================================================
+// CONFIG
+// ================================================================
+const SHEET_ID = '1CFQjZ9x72Uw8bi9AItP0IXhzVk8N81MeVlNimbQynvo';
+const SHEET_GID = '970813333';
+
+const STAGES = [
+  { id:'inquiry',    label:'교육문의',       color:'#2563EB', bg:'#EFF6FF' },
+  { id:'curriculum', label:'커리큘럼제안',   color:'#7C3AED', bg:'#F5F3FF' },
+  { id:'proposal',   label:'제안서발송',     color:'#4F46E5', bg:'#EEF2FF' },
+  { id:'quote1',     label:'1차견적',        color:'#D97706', bg:'#FFFBEB' },
+  { id:'quote2',     label:'2차견적',        color:'#EA580C', bg:'#FFF7ED' },
+  { id:'fail',       label:'계약실패(연기)', color:'#9CA3AF', bg:'#F3F4F6' },
+  { id:'rejected',   label:'계약거절(전달)', color:'#EF4444', bg:'#FEF2F2' },
+  { id:'lost',       label:'계약소멸',       color:'#6B7280', bg:'#F3F4F6' },
+  { id:'won',        label:'계약성공',       color:'#10B981', bg:'#ECFDF5' },
+  { id:'success',    label:'입금완료',       color:'#047857', bg:'#ECFDF5' },
+];
+const STAGE_MAP = {}; STAGES.forEach(s => STAGE_MAP[s.id] = s);
+
+// Pipeline bar stages (8 main stages shown in each card)
+const PIPELINE = [
+  { id:'inquiry',    label:'교육문의',      color:'#FACC15' },
+  { id:'curriculum', label:'커리큘럼제안',   color:'#F97316' },
+  { id:'quote1',     label:'1차견적',       color:'#F87171' },
+  { id:'quote2',     label:'2차견적',       color:'#991B1B' },
+  { id:'fail',       label:'계약실패(연기)', color:'#4B5563' },
+  { id:'rejected',   label:'계약거절(전달)', color:'#38BDF8' },
+  { id:'won',        label:'계약성공',      color:'#1D4ED8' },
+  { id:'success',    label:'입금완료',      color:'#EC4899' },
+];
+// Map extra stages to pipeline display
+const PIPELINE_ALIAS = { proposal:'curriculum', lost:'fail' };
+
+const PROGRESS_STAGES = ['inquiry','curriculum','proposal','quote1','quote2'];
+const WON_STAGES = ['won','success'];
+const FAILED_STAGES = ['fail','rejected','lost'];
+
+const FIELDS = [
+  {key:'company',label:'회사명',type:'text',section:'basic',required:true},
+  {key:'contact',label:'담당자',type:'text',section:'basic'},
+  {key:'contactPhone',label:'연락처',type:'tel',section:'basic'},
+  {key:'contactEmail',label:'이메일',type:'email',section:'basic'},
+  {key:'training',label:'교육과정',type:'text',section:'edu',required:true},
+  {key:'title',label:'제목',type:'text',section:'edu',full:true},
+  {key:'instructor',label:'강사',type:'text',section:'edu'},
+  {key:'eduDate',label:'교육일자',type:'text',section:'edu'},
+  {key:'eduStartTime',label:'시작시간',type:'text',section:'edu'},
+  {key:'eduHours',label:'교육시간(H)',type:'number',section:'edu'},
+  {key:'revenue',label:'매출액',type:'number',section:'sales'},
+  {key:'revType',label:'매출유형',type:'text',section:'sales'},
+  {key:'lectureFee',label:'강사료',type:'number',section:'sales'},
+  {key:'commission',label:'수수료',type:'number',section:'sales'},
+  {key:'registrant',label:'등록자',type:'text',section:'info'},
+  {key:'note',label:'비고',type:'textarea',section:'info',full:true},
+];
+const SECTIONS = {basic:'기본 정보',edu:'교육 정보',sales:'매출 정보',info:'기타 정보'};
+
+// ================================================================
+// STATE
+// ================================================================
+const state = {
+  data:[], filteredData:[], currentFilter:'all', searchParams:{},
+  editingItem:null, isNew:false, currentTab:'list',
+  scriptUrl: localStorage.getItem('crm_script_url') || '',
+};
+
+// ================================================================
+// DATA
+// ================================================================
+function showLoading(m){document.getElementById('loadingText').textContent=m||'로딩 중...';document.getElementById('loadingOverlay').classList.remove('hidden')}
+function hideLoading(){document.getElementById('loadingOverlay').classList.add('hidden')}
+
+async function loadData(){
+  if(!state.scriptUrl){
+    hideLoading();
+    showToast('Apps Script URL을 설정하세요. 상단 연동 설정을 열어주세요.','error');
+    toggleConn();
+    return;
+  }
+  showLoading('데이터 로딩 중...');
+  try{
+    const r=await fetch(state.scriptUrl);const j=await r.json();
+    if(j.success&&j.data){
+      state.data=j.data.map(normalizeRow);applyFilters();hideLoading();
+      showToast('데이터 로드 완료 ('+state.data.length+'건)','success');
+    } else {
+      hideLoading();showToast('데이터 로드 실패: '+(j.error||'오류'),'error');
+    }
+  }catch(e){console.error(e);hideLoading();showToast('데이터 로드 실패: '+e.message,'error')}
+}
+
+function normalizeRow(r){
+  return{
+    id:String(r.id||''),company:String(r.company||''),contact:String(r.contact||''),
+    contactPhone:String(r.contactPhone||''),contactEmail:String(r.contactEmail||''),
+    training:String(r.training||''),title:String(r.title||''),revenue:Number(r.revenue)||0,
+    revType:String(r.revType||'교육매출'),instructor:String(r.instructor||''),
+    commission:Number(r.commission)||0,registrant:String(r.registrant||''),
+    eduDate:String(r.eduDate||''),eduStartTime:String(r.eduStartTime||''),
+    eduHours:String(r.eduHours||''),lectureFee:Number(r.lectureFee)||0,
+    note:String(r.note||''),stageId:String(r.stageId||'inquiry'),
+    stageDate:String(r.stageDate||''),createdAt:String(r.createdAt||''),updatedAt:String(r.updatedAt||''),
+  };
+}
+
+// ================================================================
+// FILTERING
+// ================================================================
+function applyFilters(){
+  let d=[...state.data];
+  if(state.currentFilter==='progress')d=d.filter(x=>PROGRESS_STAGES.includes(x.stageId));
+  else if(state.currentFilter==='won')d=d.filter(x=>WON_STAGES.includes(x.stageId));
+  else if(state.currentFilter==='failed')d=d.filter(x=>FAILED_STAGES.includes(x.stageId));
+  const sp=state.searchParams;
+  if(sp.company)d=d.filter(x=>x.company.toLowerCase().includes(sp.company.toLowerCase()));
+  if(sp.contact)d=d.filter(x=>x.contact.toLowerCase().includes(sp.contact.toLowerCase()));
+  if(sp.training)d=d.filter(x=>x.training.toLowerCase().includes(sp.training.toLowerCase()));
+  if(sp.stage)d=d.filter(x=>x.stageId===sp.stage);
+  if(sp.instructor)d=d.filter(x=>x.instructor.toLowerCase().includes(sp.instructor.toLowerCase()));
+  if(sp.registrant)d=d.filter(x=>x.registrant.toLowerCase().includes(sp.registrant.toLowerCase()));
+  d.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  state.filteredData=d;
+  renderStats();renderList();
+}
+
+function filterByCard(f){
+  state.currentFilter=f;
+  document.querySelectorAll('.stat-card').forEach(el=>el.classList.toggle('active',el.dataset.filter===f));
+  applyFilters();
+}
+function doSearch(){
+  state.searchParams={
+    company:document.getElementById('srcCompany').value.trim(),
+    contact:document.getElementById('srcContact').value.trim(),
+    training:document.getElementById('srcTraining').value.trim(),
+    stage:document.getElementById('srcStage').value,
+    instructor:document.getElementById('srcInstructor').value.trim(),
+    registrant:document.getElementById('srcRegistrant').value.trim(),
+  };applyFilters();
+}
+function clearSearch(){
+  ['srcCompany','srcContact','srcTraining','srcInstructor','srcRegistrant'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('srcStage').value='';state.searchParams={};applyFilters();
+}
+
+// ================================================================
+// SAVE
+// ================================================================
+async function saveToSheet(action,data,id,stageId,stageDate){
+  if(!state.scriptUrl){showToast('Apps Script URL을 먼저 설정하세요.','error');toggleConn();return false}
+  showLoading('저장 중...');
+  try{
+    const payload={action};
+    if(action==='add'||action==='update')payload.data=data;
+    else if(action==='delete')payload.id=id;
+    else if(action==='updateStage'){payload.id=id;payload.stageId=stageId||data?.stageId;payload.stageDate=stageDate||data?.stageDate}
+    const r=await fetch(state.scriptUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    const j=await r.json();hideLoading();
+    if(j.success){showToast(action==='add'?'추가 완료':action==='delete'?'삭제 완료':'저장 완료','success');return true}
+    showToast('저장 실패: '+(j.error||'오류'),'error');return false;
+  }catch(e){hideLoading();showToast('저장 실패: '+e.message,'error');return false}
+}
+
+// ================================================================
+// RENDER STATS
+// ================================================================
+function renderStats(){
+  const all=state.data.length;
+  const prog=state.data.filter(d=>PROGRESS_STAGES.includes(d.stageId));
+  const won=state.data.filter(d=>WON_STAGES.includes(d.stageId));
+  const fail=state.data.filter(d=>FAILED_STAGES.includes(d.stageId));
+  document.getElementById('statAll').textContent=all;
+  document.getElementById('statProgress').textContent=prog.length;
+  document.getElementById('statWon').textContent=won.length;
+  document.getElementById('statFailed').textContent=fail.length;
+  const pr=prog.reduce((s,d)=>s+d.revenue,0);
+  const wr=won.reduce((s,d)=>s+d.revenue,0);
+  const fr=fail.reduce((s,d)=>s+d.revenue,0);
+  document.getElementById('statProgressSub').textContent=pr>0?fmtCur(pr):'';
+  document.getElementById('statWonSub').textContent=wr>0?fmtCur(wr):'';
+  document.getElementById('statFailedSub').textContent=fr>0?fmtCur(fr):'';
+  document.getElementById('tabCount').textContent=all;
+}
+
+// ================================================================
+// RENDER LIST (card style matching screenshot)
+// ================================================================
+function renderList(){
+  const c=document.getElementById('oppListContainer');
+  if(state.filteredData.length===0){
+    c.innerHTML=`<div class="empty-state"><div class="empty-icon">&#128203;</div><h3>영업기회가 없습니다</h3><p>새 영업기회를 추가하거나 검색 조건을 변경하세요.</p></div>`;
+    return;
+  }
+  let h='<div class="opp-list">';
+  state.filteredData.forEach(item=>{
+    const stage=STAGE_MAP[item.stageId]||STAGES[0];
+    h+=`<div class="opp-card">`;
+    // Header
+    h+=`<div class="opp-top">
+      <span class="opp-stage-badge badge-${item.stageId}">${stage.label}</span>
+      <div class="opp-top-actions">
+        <button class="btn-sm btn-quote" onclick="event.stopPropagation();generateQuote('${item.id}')">&#128196; 견적서</button>
+        <button class="btn-sm btn-edit" onclick="event.stopPropagation();toggleInlineEdit('${item.id}')">수정</button>
+      </div>
+    </div>`;
+    // Title
+    h+=`<div class="opp-title">${esc(item.title||item.company+'/'+item.training)}</div>`;
+    // Pipeline
+    h+=renderPipeline(item);
+    // Info row 1
+    h+=`<div class="opp-info">
+      <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="info-label">고객사</span> <span class="info-value">${esc(item.company)}</span></div>
+      <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="info-label">담당자</span> <span class="info-value">${esc(item.contact)}</span></div>
+      ${item.contactPhone?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><span class="info-label">휴대폰</span> <a href="tel:${item.contactPhone}">${esc(item.contactPhone)}</a></div>`:''}
+      ${item.contactEmail?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="info-label">이메일</span> <a href="mailto:${item.contactEmail}">${esc(item.contactEmail)}</a></div>`:''}
+      <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="4" y="18" font-size="18" font-weight="bold" fill="currentColor" stroke="none">₩</text></svg><span class="info-label">예상매출</span> <span class="info-value opp-revenue-val">${item.revenue>0?fmtCur(item.revenue):'-'}</span></div>
+    </div>`;
+    // Info row 2
+    h+=`<div class="opp-info">
+      ${item.eduHours?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="info-label">교육시간</span> <span class="info-value">${item.eduHours}시간</span></div>`:''}
+      ${item.lectureFee>0?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="info-label">강의료</span> <span class="info-value">${fmtCur(item.lectureFee)}</span></div>`:''}
+      <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="info-label">매출구분</span> <span class="info-value">${esc(item.revType)}</span></div>
+      <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="info-label">등록일</span> <span class="info-value">${fmtDate(item.createdAt)}</span></div>
+      ${item.registrant?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="info-label">등록자</span> <span class="info-value">${esc(item.registrant)}</span></div>`:''}
+    </div>`;
+    // Note
+    if(item.note){
+      const noteId='note_'+item.id.replace(/[^a-zA-Z0-9_]/g,'');
+      h+=`<div class="opp-note-section">
+        <div class="opp-note-text" id="${noteId}">${esc(item.note)}</div>
+        <div class="opp-note-toggle"><button onclick="event.stopPropagation();toggleNote('${noteId}',this)">더보기</button></div>
+      </div>`;
+    }
+    // Inline Edit Panel
+    const safeId=item.id.replace(/[^a-zA-Z0-9_]/g,'');
+    h+=`<div class="opp-edit-panel" id="editpanel_${safeId}"></div>`;
+    h+=`</div>`;
+  });
+  h+='</div>';
+  c.innerHTML=h;
+}
+
+function renderPipeline(item){
+  const activeId = PIPELINE_ALIAS[item.stageId] || item.stageId;
+  let h='<div class="pipeline">';
+  PIPELINE.forEach(step=>{
+    const isActive = step.id === activeId;
+    h+=`<div class="pipeline-step ${isActive?'active':''}" ${isActive?`style="background:${step.color}"`:''} onclick="changeStage('${item.id}','${step.id}')" style="${isActive?`background:${step.color};`:''}cursor:pointer" title="${step.label}(으)로 변경">
+      <span class="step-label">${step.label}</span>
+      ${isActive?`<span class="step-date">${fmtDate(item.stageDate)}</span>`:''}
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+async function changeStage(itemId, newStageId){
+  const item=state.data.find(d=>d.id===itemId);if(!item)return;
+  const oldStage=item.stageId;
+  if(oldStage===newStageId)return;
+  const stageLabel=STAGE_MAP[newStageId]?.label||newStageId;
+  const now=new Date().toISOString().split('T')[0].replace(/-/g,'.');
+  // 즉시 UI 업데이트
+  item.stageId=newStageId;
+  item.stageDate=now;
+  item.updatedAt=new Date().toISOString();
+  applyFilters();
+  showToast(`"${stageLabel}" 단계로 변경됨`,'success');
+  // 서버 저장
+  const saved=await saveToSheet('updateStage',null,itemId,newStageId,now);
+  if(!saved){
+    item.stageId=oldStage;
+    applyFilters();
+    showToast('저장 실패. 되돌렸습니다.','error');
+  }
+}
+
+function toggleNote(id, btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const expanded=el.classList.toggle('expanded');
+  btn.textContent=expanded?'접기':'더보기';
+}
+
+function generateQuote(id){
+  const item=state.data.find(d=>d.id===id);
+  if(!item)return;
+  // Simple quote generation - could be enhanced
+  const quote=`
+========================================
+          견 적 서
+========================================
+견적일: ${new Date().toLocaleDateString('ko-KR')}
+
+[고객 정보]
+회사명: ${item.company}
+담당자: ${item.contact}
+연락처: ${item.contactPhone}
+이메일: ${item.contactEmail}
+
+[교육 정보]
+교육과정: ${item.training}
+교육시간: ${item.eduHours||'-'}시간
+강사: ${item.instructor||'-'}
+
+[견적 금액]
+교육비: ${item.revenue>0?fmtCur(item.revenue):'-'}
+강사료: ${item.lectureFee>0?fmtCur(item.lectureFee):'-'}
+
+========================================
+  `.trim();
+  // Open in new window for printing
+  const w=window.open('','_blank','width=600,height=800');
+  w.document.write(`<html><head><title>견적서 - ${item.company}</title><style>body{font-family:'Noto Sans KR',sans-serif;padding:40px;white-space:pre-wrap;font-size:14px;line-height:1.8}</style></head><body>${esc(quote)}</body></html>`);
+  w.document.close();
+}
+
+// ================================================================
+// TABS & FORM
+// ================================================================
+function switchTab(tab){
+  state.currentTab=tab;
+  document.getElementById('tabNew').classList.toggle('active',tab==='new');
+  document.getElementById('tabList').classList.toggle('active',tab==='list');
+  document.getElementById('listPanel').classList.toggle('hidden',tab!=='list');
+  document.getElementById('formPanel').classList.toggle('hidden',tab!=='new');
+  if(tab==='new'&&!state.editingItem)openNew();
+}
+
+function openNew(){
+  const now=new Date();const ds=now.toISOString().split('T')[0].replace(/-/g,'.');
+  state.editingItem={
+    id:'crm_'+Date.now().toString().slice(-6),company:'',contact:'',contactPhone:'',contactEmail:'',
+    training:'',title:'',revenue:0,revType:'교육매출',instructor:'김종혁',commission:0,registrant:'김종혁',
+    eduDate:'',eduStartTime:'',eduHours:'',lectureFee:0,note:'',
+    stageId:'inquiry',stageDate:ds,createdAt:now.toISOString(),updatedAt:now.toISOString(),
+  };
+  state.isNew=true;renderForm();switchTab('new');
+}
+
+function openEdit(id){
+  const item=state.data.find(d=>d.id===id);if(!item)return;
+  state.editingItem={...item};state.isNew=false;renderForm();switchTab('new');
+}
+
+// Inline edit (accordion under card)
+function toggleInlineEdit(id){
+  const safeId=id.replace(/[^a-zA-Z0-9_]/g,'');
+  const panel=document.getElementById('editpanel_'+safeId);
+  if(!panel)return;
+  const isOpen=panel.classList.contains('open');
+  // Close all other panels
+  document.querySelectorAll('.opp-edit-panel.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen){
+    const item=state.data.find(d=>d.id===id);if(!item)return;
+    state.editingItem={...item};state.isNew=false;
+    renderInlineEdit(safeId);
+    panel.classList.add('open');
+    setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  } else { state.editingItem=null; }
+}
+
+function renderInlineEdit(safeId){
+  const item=state.editingItem;
+  const panel=document.getElementById('editpanel_'+safeId);
+  if(!panel||!item)return;
+  let h='';
+  h+=`<div style="margin-bottom:16px"><div class="stage-selector">`;
+  STAGES.forEach(s=>{
+    const sel=item.stageId===s.id;
+    h+=`<div class="stage-option ${sel?'selected':''}" data-stage="${s.id}" style="${sel?`background:${s.color};color:#fff;border-color:${s.color}`:''}" onclick="selectStage('${s.id}')">${s.label}</div>`;
+  });
+  h+=`</div></div>`;
+  h+=buildCompactForm(item);
+  h+=`<div style="display:flex;gap:10px;justify-content:flex-end;padding-top:12px;border-top:1px solid #F1F5F9">`;
+  h+=`<button class="btn btn-primary" style="background:var(--red);border-color:var(--red);margin-right:auto" onclick="shareToGoogleCalendar()">📅 구글달력 공유&저장</button>`;
+  h+=`<button class="btn btn-outline" onclick="closeInlineEdit('${safeId}')">취소</button>`;
+  h+=`<button class="btn btn-primary" onclick="handleInlineSave('${item.id}')">저장</button>`;
+  h+=`</div>`;
+  panel.innerHTML=h;
+}
+
+function closeInlineEdit(safeId){
+  const panel=document.getElementById('editpanel_'+safeId);
+  if(panel)panel.classList.remove('open');
+  state.editingItem=null;
+}
+
+function readFormValues(item){
+  const keys=['contact','company','contactPhone','contactEmail','training','title','eduDate','eduStartTime','eduHours','lectureFee','revenue','revType','registrant','coInstructor','coCommission','note'];
+  const commaKeys=['lectureFee','revenue'];
+  const numKeys=['eduHours','coCommission'];
+  keys.forEach(k=>{const el=document.getElementById('field_'+k);if(el){let v=el.value;if(commaKeys.includes(k))v=parseComma(v);else if(numKeys.includes(k))v=Number(v)||0;item[k]=v}});
+  item.instructor='김종혁';
+  if(!item.title&&item.company&&item.training)item.title=item.company+'/'+item.training;
+  item.updatedAt=new Date().toISOString();
+}
+
+async function handleInlineSave(id){
+  const item=state.editingItem;if(!item)return;
+  readFormValues(item);
+  if(!item.company){showToast('회사명을 입력하세요.','error');return}
+  if(!item.training){showToast('교육과정을 입력하세요.','error');return}
+  const saved=await saveToSheet('update',item);
+  if(saved){
+    const i=state.data.findIndex(d=>d.id===item.id);if(i!==-1)state.data[i]={...item};
+    state.editingItem=null;applyFilters();
+  }
+}
+
+function buildTimeOptions(selected){
+  let h='<option value="">선택</option>';
+  for(let i=8;i<=22;i++){const t=String(i).padStart(2,'0')+':00';h+=`<option value="${t}" ${selected===t?'selected':''}>${t}</option>`}
+  return h;
+}
+
+function buildCompactForm(item){
+  let h='';
+  // 담당자 정보
+  h+=`<div style="margin-bottom:16px">`;
+  h+=`<div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap">`;
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>담당자</label><div style="display:flex;gap:6px"><input type="text" id="field_contact" value="${esc(String(item.contact||''))}" placeholder="이름(회사명)"><button class="btn btn-outline" onclick="searchGoogleContacts()" style="white-space:nowrap;padding:6px 10px;font-size:.78rem">🔍</button></div></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>회사명 *</label><input type="text" id="field_company" value="${esc(String(item.company||''))}" oninput="autoTitle()"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>연락처</label><input type="tel" id="field_contactPhone" value="${esc(String(item.contactPhone||''))}"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:160px;margin:0"><label>이메일</label><input type="email" id="field_contactEmail" value="${esc(String(item.contactEmail||''))}"></div>`;
+  h+=`</div><div id="contactSearchArea"></div></div>`;
+  // 교육 정보
+  h+=`<div style="margin-bottom:16px">`;
+  h+=`<div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap">`;
+  h+=`<div class="form-group" style="flex:2;min-width:140px;margin:0"><label>교육과정 *</label><input type="text" id="field_training" value="${esc(String(item.training||''))}" oninput="autoTitle()"></div>`;
+  h+=`<div class="form-group" style="flex:2;min-width:140px;margin:0"><label>제목 (자동)</label><input type="text" id="field_title" value="${esc(String(item.title||''))}" readonly style="background:#f9fafb;color:#64748B"></div>`;
+  h+=`</div>`;
+  h+=`<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">`;
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>교육일자</label><input type="date" id="field_eduDate" value="${esc(String(item.eduDate||''))}"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>시작시간</label><select id="field_eduStartTime">${buildTimeOptions(item.eduStartTime||'')}</select></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:80px;margin:0"><label>교육시간(H)</label><input type="number" id="field_eduHours" value="${esc(String(item.eduHours||''))}" oninput="autoRevenue()"></div>`;
+  h+=`</div></div>`;
+  // 매출 정보
+  h+=`<div style="margin-bottom:16px">`;
+  h+=`<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>강사료</label><input type="text" id="field_lectureFee" value="${fmtComma(item.lectureFee)}" oninput="fmtCommaInput(this);autoRevenue()" inputmode="numeric"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>매출액 (자동)</label><input type="text" id="field_revenue" value="${fmtComma(item.revenue)}" readonly style="background:#f9fafb;font-weight:600;color:var(--primary)"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>매출유형</label><select id="field_revType"><option value="교육매출" ${(item.revType||'교육매출')==='교육매출'?'selected':''}>교육매출</option><option value="컨설팅매출" ${item.revType==='컨설팅매출'?'selected':''}>컨설팅매출</option><option value="콘텐츠매출" ${item.revType==='콘텐츠매출'?'selected':''}>콘텐츠매출</option><option value="기타매출" ${item.revType==='기타매출'?'selected':''}>기타매출</option></select></div>`;
+  h+=`</div></div>`;
+  // 기타 정보
+  h+=`<div style="margin-bottom:16px">`;
+  h+=`<div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap">`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>등록자</label><input type="text" id="field_registrant" value="${esc(String(item.registrant||'김종혁'))}"></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>협업강사</label><input type="text" id="field_coInstructor" value="${esc(String(item.coInstructor||''))}" placeholder="이름"></div>`;
+  h+=`<div class="form-group" style="flex:0 0 100px;margin:0"><label>커미션(%)</label><input type="number" id="field_coCommission" value="${item.coCommission||''}" min="0" max="100"></div>`;
+  h+=`</div>`;
+  h+=`<div class="form-group" style="margin:0"><label>비고</label><textarea id="field_note">${esc(String(item.note||''))}</textarea></div>`;
+  h+=`</div>`;
+  return h;
+}
+
+function renderForm(){
+  const item=state.editingItem;if(!item)return;
+  document.getElementById('formTitle').textContent=state.isNew?'새 영업기회':item.company+' - '+item.training;
+  let h='';
+  h+=`<div style="margin-bottom:16px"><div class="stage-selector">`;
+  STAGES.forEach(s=>{
+    const sel=item.stageId===s.id;
+    h+=`<div class="stage-option ${sel?'selected':''}" data-stage="${s.id}" style="${sel?`background:${s.color};color:#fff;border-color:${s.color}`:''}" onclick="selectStage('${s.id}')">${s.label}</div>`;
+  });
+  h+=`</div></div>`;
+  h+=buildCompactForm(item);
+  document.getElementById('formBody').innerHTML=h;
+  let fh='';
+  fh+=`<button class="btn btn-primary" style="background:var(--red);border-color:var(--red);margin-right:auto" onclick="shareToGoogleCalendar()">📅 구글달력 공유&저장</button>`;
+  fh+=`<button class="btn btn-outline" onclick="switchTab('list')">취소</button>`;
+  fh+=`<button class="btn btn-primary" onclick="handleSave()">저장</button>`;
+  document.getElementById('formFooter').innerHTML=fh;
+}
+
+// Auto-generate title: 고객사/교육과정
+function autoTitle(){
+  const company=document.getElementById('field_company')?.value||'';
+  const training=document.getElementById('field_training')?.value||'';
+  const titleEl=document.getElementById('field_title');
+  if(titleEl){
+    if(company||training) titleEl.value=[company,training].filter(Boolean).join('/');
+    else titleEl.value='';
+  }
+  if(state.editingItem){state.editingItem.title=titleEl?.value||''}
+}
+// 천단위 콤마 포맷
+function fmtComma(n){if(!n&&n!==0)return '';return Number(n)?Number(n).toLocaleString('ko-KR'):''}
+function parseComma(s){return Number(String(s).replace(/,/g,''))||0}
+function fmtCommaInput(el){const pos=el.selectionStart;const raw=el.value.replace(/,/g,'').replace(/[^0-9]/g,'');const num=Number(raw)||0;el.value=num?num.toLocaleString('ko-KR'):'';const diff=el.value.length-raw.length;el.setSelectionRange(pos+diff,pos+diff)}
+// Auto-calculate revenue: 강사료 × 교육시간
+function autoRevenue(){
+  const fee=parseComma(document.getElementById('field_lectureFee')?.value);
+  const hours=Number(document.getElementById('field_eduHours')?.value)||0;
+  const revEl=document.getElementById('field_revenue');
+  if(revEl&&fee&&hours){revEl.value=fmtComma(fee*hours)} else if(revEl&&!fee&&!hours){revEl.value=''}
+}
+
+// Google Contacts Search (via Apps Script)
+async function searchGoogleContacts(){
+  const area=document.getElementById('contactSearchArea');if(!area)return;
+  if(!state.scriptUrl){
+    area.innerHTML=`<div style="padding:12px;background:#FEF3C7;border-radius:8px;margin-bottom:12px;font-size:.85rem">
+      <div style="font-weight:600">⚠️ 연동 설정 필요</div>
+      <p style="color:#92400E;margin-top:4px">주소록 검색을 사용하려면 상단 '연동 설정'에서 Apps Script URL을 먼저 설정하세요.</p>
+    </div>`;
+    return;
+  }
+  const query=document.getElementById('field_contact')?.value?.trim();
+  if(!query){showToast('담당자 이름을 입력하세요.','error');return}
+  area.innerHTML=`<div class="contact-search-status"><div class="contact-search-spinner"></div> "${query}" 검색 중...</div>`;
+  try{
+    const resp=await fetch(state.scriptUrl,{method:'POST',body:JSON.stringify({action:'searchContacts',query:query})});
+    const data=await resp.json();
+    if(!data.success){area.innerHTML=`<div class="contact-search-status" style="color:var(--red)">❌ ${data.error}</div>`;return}
+    const results=data.data||[];
+    if(results.length===0){area.innerHTML=`<div class="contact-search-status" style="color:var(--text-sec)">😔 "${query}" 검색 결과가 없습니다.</div>`;return}
+    let rh=`<div class="contact-search-status" style="color:var(--green)">✅ ${results.length}건 발견</div><div class="contact-results">`;
+    results.forEach(c=>{
+      rh+=`<div class="contact-result-item" onclick='applyContact(${JSON.stringify(c).replace(/'/g,"&#39;")})'>
+        <div style="font-weight:600">${esc(c.name)}${c.org?' <span style="color:var(--text-sec);font-weight:400">('+esc(c.org)+')</span>':''}</div>
+        <div style="font-size:.8rem;color:var(--text-sec)">${c.phone?'📱 '+esc(c.phone):''}${c.phone&&c.email?' · ':''}${c.email?'✉️ '+esc(c.email):''}</div>
+      </div>`;
+    });
+    rh+=`</div>`;
+    area.innerHTML=rh;
+  }catch(err){
+    area.innerHTML=`<div class="contact-search-status" style="color:var(--red)">❌ 검색 오류: ${err.message}</div>`;
+  }
+}
+
+function applyContact(c){
+  const nameWithOrg=c.org?c.name+'('+c.org+')':c.name;
+  const contactEl=document.getElementById('field_contact');if(contactEl)contactEl.value=nameWithOrg;
+  const companyEl=document.getElementById('field_company');if(companyEl&&c.org)companyEl.value=c.org;
+  const phoneEl=document.getElementById('field_contactPhone');if(phoneEl&&c.phone)phoneEl.value=c.phone;
+  const emailEl=document.getElementById('field_contactEmail');if(emailEl&&c.email)emailEl.value=c.email;
+  if(state.editingItem){
+    state.editingItem.contact=nameWithOrg;
+    if(c.org)state.editingItem.company=c.org;
+    if(c.phone)state.editingItem.contactPhone=c.phone;
+    if(c.email)state.editingItem.contactEmail=c.email;
+  }
+  autoTitle();
+  const area=document.getElementById('contactSearchArea');if(area)area.innerHTML=`<div class="contact-search-status" style="color:var(--green)">✅ ${esc(nameWithOrg)} 적용됨</div>`;
+  setTimeout(()=>{if(area)area.innerHTML=''},2000);
+}
+
+// 구글 캘린더 일정 공유 & 저장
+async function shareToGoogleCalendar(){
+  const item=state.editingItem;if(!item)return;
+  readFormValues(item);
+  if(!state.scriptUrl){showToast('연동 설정에서 Apps Script URL을 먼저 설정하세요.','error');return}
+  if(!item.company){showToast('회사명을 입력하세요.','error');return}
+  if(!item.training){showToast('교육과정을 입력하세요.','error');return}
+  if(!item.eduDate){showToast('교육일자를 입력하세요.','error');return}
+  // 매출액 만원 단위
+  const rev=parseComma(item.revenue)||0;
+  const revMan=rev?Math.round(rev/10000)+'만원':'';
+  const calTitle=item.company+' '+item.training+(revMan?' ('+revMan+')':'');
+  const calDesc='[공개]'+(item.note?'\n'+item.note:'');
+  showToast('📅 구글 캘린더에 저장 중...','info');
+  try{
+    const resp=await fetch(state.scriptUrl,{method:'POST',body:JSON.stringify({
+      action:'createCalendarEvent',
+      data:{title:calTitle,description:calDesc,date:item.eduDate,startTime:item.eduStartTime||'',hours:item.eduHours||1}
+    })});
+    const data=await resp.json();
+    if(data.success){showToast('✅ 구글 캘린더에 일정이 저장되었습니다!','success')}
+    else{showToast('❌ '+data.error,'error')}
+  }catch(err){showToast('❌ 캘린더 저장 오류: '+err.message,'error')}
+}
+
+function selectStage(sid){
+  if(!state.editingItem)return;
+  state.editingItem.stageId=sid;
+  state.editingItem.stageDate=new Date().toISOString().split('T')[0].replace(/-/g,'.');
+  document.querySelectorAll('.stage-selector .stage-option').forEach(el=>{
+    const id=el.dataset.stage,s=STAGE_MAP[id];
+    if(id===sid){el.classList.add('selected');el.style.background=s.color;el.style.color='#fff';el.style.borderColor=s.color}
+    else{el.classList.remove('selected');el.style.background='';el.style.color='';el.style.borderColor=''}
+  });
+}
+
+async function handleSave(){
+  const item=state.editingItem;if(!item)return;
+  readFormValues(item);
+  if(!item.company){showToast('회사명을 입력하세요.','error');return}
+  if(!item.training){showToast('교육과정을 입력하세요.','error');return}
+  const action=state.isNew?'add':'update';
+  const saved=await saveToSheet(action,item);
+  if(saved){
+    if(state.isNew)state.data.unshift(item);
+    else{const i=state.data.findIndex(d=>d.id===item.id);if(i!==-1)state.data[i]={...item}}
+    state.editingItem=null;applyFilters();switchTab('list');
+  }
+}
+
+function confirmDelete(id){
+  showConfirm('삭제 확인','이 영업기회를 삭제하시겠습니까?',async()=>{
+    const saved=await saveToSheet('delete',null,id);
+    if(saved){state.data=state.data.filter(d=>d.id!==id);state.editingItem=null;applyFilters();switchTab('list')}
+  });
+}
+
+// ================================================================
+// TOGGLE
+// ================================================================
+function toggleConn(){
+  const b=document.getElementById('connBody'),a=document.getElementById('connArrow');
+  b.classList.toggle('open');a.classList.toggle('open');
+}
+function toggleSearch(){
+  const b=document.getElementById('searchBody'),a=document.getElementById('searchArrow');
+  b.classList.toggle('open');a.classList.toggle('open');
+}
+
+// ================================================================
+// SETTINGS
+// ================================================================
+function saveSettings(){
+  state.scriptUrl=document.getElementById('scriptUrlInput').value.trim();
+  localStorage.setItem('crm_script_url',state.scriptUrl);updateConnDot();
+  showToast('설정 저장 완료','success');if(state.scriptUrl)loadData();
+}
+async function testConnection(){
+  const url=document.getElementById('scriptUrlInput').value.trim();
+  if(!url){showToast('URL을 입력하세요.','error');return}
+  showLoading('연결 테스트 중...');
+  try{const r=await fetch(url);const j=await r.json();hideLoading();
+    if(j.success){showToast('연결 성공! '+(j.totalRows||0)+'건','success');state.scriptUrl=url;localStorage.setItem('crm_script_url',url);updateConnDot()}
+    else showToast('연결 실패','error');
+  }catch(e){hideLoading();showToast('연결 실패: '+e.message,'error')}
+}
+function updateConnDot(){
+  const d=document.getElementById('connDot'),l=document.getElementById('connLabel');
+  if(state.scriptUrl){d.className='conn-dot on';l.textContent='연동 설정 (Google Sheets) - 연결됨'}
+  else{d.className='conn-dot off';l.textContent='연동 설정 (Google Sheets)'}
+}
+
+// ================================================================
+// CONFIRM / TOAST / UTILS
+// ================================================================
+let confirmCb=null;
+function showConfirm(t,m,cb){document.getElementById('confirmTitle').textContent=t;document.getElementById('confirmMsg').textContent=m;confirmCb=cb;document.getElementById('confirmOverlay').classList.add('active')}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('active');confirmCb=null}
+function showToast(m,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast '+type;t.textContent=m;c.appendChild(t);setTimeout(()=>t.remove(),3000)}
+function fmtCur(n){return n?new Intl.NumberFormat('ko-KR').format(n)+'원':'0원'}
+function fmtDate(s){if(!s)return'';return(s.includes('T')?s.split('T')[0]:s).replace(/-/g,'.')}
+function fmtDT(s){if(!s)return'';try{const d=new Date(s);return isNaN(d)?s:d.toLocaleString('ko-KR')}catch{return s}}
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// ================================================================
+// INIT
+// ================================================================
+function initStageSelect(){
+  const sel=document.getElementById('srcStage');
+  STAGES.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.label;sel.appendChild(o)});
+}
+function initEvents(){
+  document.getElementById('confirmCancel').addEventListener('click',closeConfirm);
+  document.getElementById('confirmOk').addEventListener('click',()=>{if(confirmCb)confirmCb();closeConfirm()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeConfirm()});
+}
+async function init(){
+  initStageSelect();initEvents();
+  document.getElementById('scriptUrlInput').value=state.scriptUrl;
+  updateConnDot();
+  await loadData();
+}
+init();
+</script>
+</body>
+</html>
