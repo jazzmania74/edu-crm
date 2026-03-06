@@ -563,7 +563,7 @@ function renderList(){
     // Info row 2
     h+=`<div class="opp-info">
       ${item.eduDate?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="info-label">교육일자</span> <span class="info-value">${fmtDate(item.eduDate)}</span></div>`:''}
-      ${item.eduHours?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="info-label">교육시간</span> <span class="info-value">${item.eduHours}시간</span></div>`:''}
+      ${item.eduHours?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="info-label">교육시간</span> <span class="info-value">${fmtEduHours(item.eduHours)}</span></div>`:''}
       ${item.lectureFee>0?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="info-label">강의료</span> <span class="info-value">${fmtCur(item.lectureFee)}</span></div>`:''}
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="info-label">매출구분</span> <span class="info-value">${esc(item.revType)}</span></div>
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="info-label">등록일</span> <span class="info-value">${fmtDate(item.createdAt)}</span></div>
@@ -824,10 +824,13 @@ function closeInlineEdit(safeId){
 }
 
 function readFormValues(item){
-  const keys=['contact','company','contactPhone','contactEmail','training','title','eduDate','eduStartTime','eduHours','lectureFee','revenue','revType','registrant','coInstructor','coCommission','note'];
+  const keys=['contact','company','contactPhone','contactEmail','training','title','eduDate','eduStartTime','lectureFee','revenue','revType','registrant','coInstructor','coCommission','note'];
   const commaKeys=['lectureFee','revenue'];
-  const numKeys=['eduHours','coCommission'];
+  const numKeys=['coCommission'];
   keys.forEach(k=>{const el=document.getElementById('field_'+k);if(el){let v=el.value;if(commaKeys.includes(k))v=parseComma(v);else if(numKeys.includes(k))v=Number(v)||0;else if(k==='eduDate'&&v)v=v.replace(/-/g,'.');item[k]=v}});
+  const ehH=Number(document.getElementById('field_eduHoursH')?.value)||0;
+  const ehM=Number(document.getElementById('field_eduHoursM')?.value)||0;
+  item.eduHours=ehH+(ehM/60);
   item.instructor='김종혁';
   if(!item.title&&item.company&&item.training)item.title=item.company+'/'+item.training;
   const caY=document.getElementById('field_caY'),caM=document.getElementById('field_caM'),caD=document.getElementById('field_caD');
@@ -887,7 +890,10 @@ function buildCompactForm(item){
   const eduDateVal=(item.eduDate||'').includes('T')?(item.eduDate||'').split('T')[0]:(item.eduDate||'').replace(/\./g,'-');
   h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>교육일자</label><input type="date" id="field_eduDate" value="${eduDateVal}" onfocus="try{this.showPicker()}catch(e){}"></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>시작시간</label><select id="field_eduStartTime">${buildTimeOptions(item.eduStartTime||'')}</select></div>`;
-  h+=`<div class="form-group" style="flex:1;min-width:80px;margin:0"><label>교육시간(H)</label><input type="number" id="field_eduHours" value="${esc(String(item.eduHours||''))}" oninput="autoRevenue()"></div>`;
+  const ehVal=Number(item.eduHours)||0;const ehH=Math.floor(ehVal);const ehM=(ehVal%1)>=0.25?30:0;
+  let ehHOpts='<option value="0">-</option>';for(let i=1;i<=8;i++)ehHOpts+=`<option value="${i}" ${ehH===i?'selected':''}>${i}시간</option>`;
+  h+=`<div class="form-group" style="flex:1;min-width:80px;margin:0"><label>교육시간</label><select id="field_eduHoursH" onchange="autoRevenue()" style="min-width:65px">${ehHOpts}</select></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:60px;margin:0"><label>분</label><select id="field_eduHoursM" onchange="autoRevenue()"><option value="0" ${ehM===0?'selected':''}>0분</option><option value="30" ${ehM===30?'selected':''}>30분</option></select></div>`;
   h+=`</div></div>`;
   // 매출 정보
   h+=`<div style="margin-bottom:16px">`;
@@ -945,7 +951,9 @@ function fmtCommaInput(el){const pos=el.selectionStart;const raw=el.value.replac
 // Auto-calculate revenue: 강사료 × 교육시간 (시간 없으면 강사료 = 매출액)
 function autoRevenue(){
   const fee=parseComma(document.getElementById('field_lectureFee')?.value);
-  const hours=Number(document.getElementById('field_eduHours')?.value)||0;
+  const hH=Number(document.getElementById('field_eduHoursH')?.value)||0;
+  const hM=Number(document.getElementById('field_eduHoursM')?.value)||0;
+  const hours=hH+(hM/60);
   const revEl=document.getElementById('field_revenue');
   if(!revEl)return;
   if(fee&&hours){revEl.value=fmtComma(fee*hours)}
@@ -1139,6 +1147,7 @@ function showConfirm(t,m,cb){document.getElementById('confirmTitle').textContent
 function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('active');confirmCb=null}
 function showToast(m,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast '+type;t.textContent=m;c.appendChild(t);setTimeout(()=>t.remove(),3000)}
 function fmtCur(n){return n?new Intl.NumberFormat('ko-KR').format(n)+'원':'0원'}
+function fmtEduHours(v){const n=Number(v)||0;const h=Math.floor(n);const m=Math.round((n-h)*60);if(h&&m)return h+'시간 '+m+'분';if(h)return h+'시간';if(m)return m+'분';return '';}
 function fmtDate(s){if(!s)return'';return(s.includes('T')?s.split('T')[0]:s).replace(/-/g,'.')}
 function fmtDT(s){if(!s)return'';try{const d=new Date(s);return isNaN(d)?s:d.toLocaleString('ko-KR')}catch{return s}}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
