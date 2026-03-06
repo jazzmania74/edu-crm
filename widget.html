@@ -1,0 +1,16 @@
+<meta charset="UTF-8">
+<!-- 아임웹 HTML 위젯용: GitHub Pages에서 index.html을 iframe으로 로드 -->
+<div style="width:100%;max-width:1200px;margin:0 auto;">
+  <iframe id="eduCrmFrame"
+    src="https://jazzmania74.github.io/edu-crm/index.html"
+    style="width:100%;min-height:100vh;border:none;display:block;"
+    allowfullscreen>
+  </iframe>
+</div>
+<script>
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'edu-crm-height') {
+    document.getElementById('eduCrmFrame').style.height = e.data.height + 'px';
+  }
+});
+</script>
