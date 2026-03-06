@@ -927,12 +927,15 @@ function autoTitle(){
 function fmtComma(n){if(!n&&n!==0)return '';return Number(n)?Number(n).toLocaleString('ko-KR'):''}
 function parseComma(s){return Number(String(s).replace(/,/g,''))||0}
 function fmtCommaInput(el){const pos=el.selectionStart;const raw=el.value.replace(/,/g,'').replace(/[^0-9]/g,'');const num=Number(raw)||0;el.value=num?num.toLocaleString('ko-KR'):'';const diff=el.value.length-raw.length;el.setSelectionRange(pos+diff,pos+diff)}
-// Auto-calculate revenue: 강사료 × 교육시간
+// Auto-calculate revenue: 강사료 × 교육시간 (시간 없으면 강사료 = 매출액)
 function autoRevenue(){
   const fee=parseComma(document.getElementById('field_lectureFee')?.value);
   const hours=Number(document.getElementById('field_eduHours')?.value)||0;
   const revEl=document.getElementById('field_revenue');
-  if(revEl&&fee&&hours){revEl.value=fmtComma(fee*hours)} else if(revEl&&!fee&&!hours){revEl.value=''}
+  if(!revEl)return;
+  if(fee&&hours){revEl.value=fmtComma(fee*hours)}
+  else if(fee){revEl.value=fmtComma(fee)}
+  else{revEl.value=''}
 }
 
 // Google Contacts Search (via Apps Script)
