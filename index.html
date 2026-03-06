@@ -304,6 +304,7 @@ a{color:var(--primary);text-decoration:none}
           <div class="search-group"><label>단계</label><select id="srcStage"><option value="">전체</option></select></div>
           <div class="search-group"><label>강사</label><input type="text" id="srcInstructor" placeholder="강사" onkeydown="if(event.key==='Enter')doSearch()"></div>
           <div class="search-group"><label>등록자</label><input type="text" id="srcRegistrant" placeholder="등록자" onkeydown="if(event.key==='Enter')doSearch()"></div>
+          <div class="search-group"><label>협업강사</label><input type="text" id="srcCoInstructor" placeholder="협업강사" onkeydown="if(event.key==='Enter')doSearch()"></div>
         </div>
         <div class="search-actions">
           <button class="btn btn-outline btn-sm" onclick="clearSearch()">초기화</button>
@@ -457,6 +458,7 @@ function applyFilters(){
   if(sp.stage)d=d.filter(x=>x.stageId===sp.stage);
   if(sp.instructor)d=d.filter(x=>x.instructor.toLowerCase().includes(sp.instructor.toLowerCase()));
   if(sp.registrant)d=d.filter(x=>x.registrant.toLowerCase().includes(sp.registrant.toLowerCase()));
+  if(sp.coInstructor)d=d.filter(x=>(x.coInstructor||'').toLowerCase().includes(sp.coInstructor.toLowerCase()));
   const normDate=s=>(s||'').replace(/\./g,'-').slice(0,10);
   d.sort((a,b)=>normDate(b.createdAt).localeCompare(normDate(a.createdAt)));
   state.filteredData=d;
@@ -476,10 +478,11 @@ function doSearch(){
     stage:document.getElementById('srcStage').value,
     instructor:document.getElementById('srcInstructor').value.trim(),
     registrant:document.getElementById('srcRegistrant').value.trim(),
+    coInstructor:document.getElementById('srcCoInstructor').value.trim(),
   };applyFilters();
 }
 function clearSearch(){
-  ['srcCompany','srcContact','srcTraining','srcInstructor','srcRegistrant'].forEach(id=>document.getElementById(id).value='');
+  ['srcCompany','srcContact','srcTraining','srcInstructor','srcRegistrant','srcCoInstructor'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('srcStage').value='';state.searchParams={};applyFilters();
 }
 
