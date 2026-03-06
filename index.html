@@ -882,7 +882,8 @@ function buildCompactForm(item){
   h+=`<div class="form-group" style="flex:2;min-width:140px;margin:0"><label>제목 (자동)</label><input type="text" id="field_title" value="${esc(String(item.title||''))}" readonly style="background:#f9fafb;color:#64748B"></div>`;
   h+=`</div>`;
   h+=`<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">`;
-  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>교육일자</label><input type="date" id="field_eduDate" value="${(item.eduDate||'').replace(/\./g,'-')}" onfocus="try{this.showPicker()}catch(e){}"></div>`;
+  const eduDateVal=(item.eduDate||'').includes('T')?(item.eduDate||'').split('T')[0]:(item.eduDate||'').replace(/\./g,'-');
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>교육일자</label><input type="date" id="field_eduDate" value="${eduDateVal}" onfocus="try{this.showPicker()}catch(e){}"></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:100px;margin:0"><label>시작시간</label><select id="field_eduStartTime">${buildTimeOptions(item.eduStartTime||'')}</select></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:80px;margin:0"><label>교육시간(H)</label><input type="number" id="field_eduHours" value="${esc(String(item.eduHours||''))}" oninput="autoRevenue()"></div>`;
   h+=`</div></div>`;
