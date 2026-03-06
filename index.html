@@ -757,6 +757,7 @@ function switchTab(tab){
   document.getElementById('tabList').classList.toggle('active',tab==='list');
   document.getElementById('listPanel').classList.toggle('hidden',tab!=='list');
   document.getElementById('formPanel').classList.toggle('hidden',tab!=='new');
+  if(tab==='list'){document.getElementById('formBody').innerHTML='';document.getElementById('formFooter').innerHTML=''}
   if(tab==='new'&&!state.editingItem)openNew();
 }
 
@@ -876,7 +877,7 @@ function buildCompactForm(item){
   // 담당자 정보
   h+=`<div style="margin-bottom:16px">`;
   h+=`<div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap">`;
-  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>담당자</label><div style="display:flex;gap:6px"><input type="text" id="field_contact" value="${esc(String(item.contact||''))}" placeholder="이름(회사명)"><button class="btn btn-outline" onclick="searchGoogleContacts()" style="white-space:nowrap;padding:6px 10px;font-size:.78rem">🔍</button></div></div>`;
+  h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>담당자</label><div style="display:flex;gap:6px"><input type="text" id="field_contact" value="${esc(String(item.contact||''))}" placeholder="이름(회사명)"><button class="btn btn-outline" onclick="event.stopPropagation();searchGoogleContacts(this)" style="white-space:nowrap;padding:6px 10px;font-size:.78rem">🔍</button></div></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>회사명 *</label><input type="text" id="field_company" value="${esc(String(item.company||''))}" oninput="autoTitle()"></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:120px;margin:0"><label>연락처</label><input type="tel" id="field_contactPhone" value="${esc(String(item.contactPhone||''))}"></div>`;
   h+=`<div class="form-group" style="flex:1;min-width:160px;margin:0"><label>이메일</label><input type="email" id="field_contactEmail" value="${esc(String(item.contactEmail||''))}"></div>`;
@@ -963,8 +964,10 @@ function autoRevenue(){
 }
 
 // Google Contacts Search (via Apps Script)
-async function searchGoogleContacts(){
-  const area=document.getElementById('contactSearchArea');if(!area)return;
+async function searchGoogleContacts(btn){
+  const container=btn?btn.closest('[style*="margin-bottom"]'):null;
+  const area=container?container.querySelector('#contactSearchArea'):document.getElementById('contactSearchArea');
+  if(!area){showToast('검색 영역을 찾을 수 없습니다.','error');return}
   if(!state.scriptUrl){
     area.innerHTML=`<div style="padding:12px;background:#FEF3C7;border-radius:8px;margin-bottom:12px;font-size:.85rem">
       <div style="font-weight:600">⚠️ 연동 설정 필요</div>
