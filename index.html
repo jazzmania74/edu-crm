@@ -97,6 +97,8 @@ a{color:var(--primary);text-decoration:none}
 .btn-quote:hover{background:var(--primary-dark)}
 .btn-edit{background:#FEF9C3;color:var(--text);border:1px solid #FACC15;font-weight:700}
 .btn-edit:hover{background:#FEF08A}
+.btn-delete{background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;font-weight:700}
+.btn-delete:hover{background:#FECACA}
 
 /* Card Title */
 .opp-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--text)}
@@ -538,6 +540,7 @@ function renderList(){
       <span class="opp-stage-badge badge-${item.stageId}">${stage.label}</span>
       <div class="opp-top-actions">
         <button class="btn-sm btn-quote" onclick="event.stopPropagation();generateQuote('${item.id}')">&#128196; 견적서</button>
+        <button class="btn-sm btn-delete" onclick="event.stopPropagation();confirmDeleteCard('${item.id}')">&#128128; 삭제</button>
         <button class="btn-sm btn-edit" onclick="event.stopPropagation();toggleInlineEdit('${item.id}')">수정</button>
       </div>
     </div>`;
@@ -1032,9 +1035,15 @@ async function handleSave(){
 }
 
 function confirmDelete(id){
-  showConfirm('삭제 확인','이 영업기회를 삭제하시겠습니까?',async()=>{
+  showConfirm('삭제 확인','삭제하실겁니까? 💀',async()=>{
     const saved=await saveToSheet('delete',null,id);
     if(saved){state.data=state.data.filter(d=>d.id!==id);state.editingItem=null;applyFilters();switchTab('list')}
+  });
+}
+function confirmDeleteCard(id){
+  showConfirm('삭제 확인','삭제하실겁니까? 💀',async()=>{
+    const saved=await saveToSheet('delete',null,id);
+    if(saved){state.data=state.data.filter(d=>d.id!==id);applyFilters()}
   });
 }
 
