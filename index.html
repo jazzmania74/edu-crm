@@ -1154,7 +1154,7 @@ function openSMS(phone){
   document.body.appendChild(ta);ta.select();
   document.execCommand('copy');document.body.removeChild(ta);
   showToast('📋 '+phone+' 복사완료! 붙여넣기(Ctrl+V)하세요','info');
-  setTimeout(()=>window.open('https://messages.google.com/web/conversations','_blank'),300);
+  setTimeout(()=>window.open('https://messages.google.com/web/conversations','_blank','width=480,height=720,left=100,top=100'),300);
 }
 function fmtCur(n){return n?new Intl.NumberFormat('ko-KR').format(n)+'원':'0원'}
 function fmtEduHours(v){const n=Number(v)||0;const h=Math.floor(n);const m=Math.round((n-h)*60);if(h&&m)return h+'시간 '+m+'분';if(h)return h+'시간';if(m)return m+'분';return '';}
