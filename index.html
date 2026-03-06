@@ -965,8 +965,7 @@ function autoRevenue(){
 
 // Google Contacts Search (via Apps Script)
 async function searchGoogleContacts(btn){
-  const container=btn?btn.closest('[style*="margin-bottom"]'):null;
-  const area=container?container.querySelector('#contactSearchArea'):document.getElementById('contactSearchArea');
+  const area=document.getElementById('contactSearchArea');
   if(!area){showToast('검색 영역을 찾을 수 없습니다.','error');return}
   if(!state.scriptUrl){
     area.innerHTML=`<div style="padding:12px;background:#FEF3C7;border-radius:8px;margin-bottom:12px;font-size:.85rem">
