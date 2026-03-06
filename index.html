@@ -102,6 +102,14 @@ a{color:var(--primary);text-decoration:none}
 .btn-clone{background:#9CA3AF;color:#fff;border:1px solid #9CA3AF;font-weight:700}
 .btn-clone:hover{background:#6B7280}
 
+/* Phone Action Menu */
+.phone-menu{position:absolute;z-index:999;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.18);overflow:hidden;min-width:160px;animation:fadeIn .15s}
+.phone-menu-item{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;font-size:14px;font-weight:500;transition:background .15s;white-space:nowrap}
+.phone-menu-item:hover{background:#F3F4F6}
+.phone-menu-item svg{width:20px;height:20px;flex-shrink:0}
+.phone-menu-item.call-item{color:#16A34A}
+.phone-menu-item.sms-item{color:#2563EB}
+
 /* Card Title */
 .opp-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--text)}
 
@@ -557,7 +565,7 @@ function renderList(){
     h+=`<div class="opp-info">
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="info-label">고객사</span> <span class="info-value">${esc(item.company)}</span></div>
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="info-label">담당자</span> <span class="info-value">${esc(item.contact)}</span></div>
-      ${item.contactPhone?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><span class="info-label">휴대폰</span> <a href="tel:${item.contactPhone}">${esc(item.contactPhone)}</a></div>`:''}
+      ${item.contactPhone?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><span class="info-label">휴대폰</span> <span class="phone-action" onclick="event.stopPropagation();showPhoneMenu(this,'${item.contactPhone}')" style="color:var(--primary);cursor:pointer;text-decoration:underline">${esc(item.contactPhone)}</span></div>`:''}
       ${item.contactEmail?`<div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="info-label">이메일</span> <a href="https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(item.contactEmail)}" target="_blank">${esc(item.contactEmail)}</a></div>`:''}
       <div class="opp-info-item"><svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="4" y="18" font-size="18" font-weight="bold" fill="currentColor" stroke="none">₩</text></svg><span class="info-label">예상매출</span> <span class="info-value opp-revenue-val">${item.revenue>0?fmtCur(item.revenue):'-'}</span></div>
     </div>`;
@@ -1147,6 +1155,29 @@ let confirmCb=null;
 function showConfirm(t,m,cb){document.getElementById('confirmTitle').textContent=t;document.getElementById('confirmMsg').textContent=m;confirmCb=cb;document.getElementById('confirmOverlay').classList.add('active')}
 function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('active');confirmCb=null}
 function showToast(m,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast '+type;t.textContent=m;c.appendChild(t);setTimeout(()=>t.remove(),3000)}
+// Phone action menu
+function showPhoneMenu(el,phone){
+  closePhoneMenu();
+  const rect=el.getBoundingClientRect();
+  const menu=document.createElement('div');menu.className='phone-menu';menu.id='phoneMenu';
+  menu.innerHTML=`
+    <div class="phone-menu-item call-item" onclick="closePhoneMenu();window.location.href='tel:${phone}'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      📞 전화걸기
+    </div>
+    <div class="phone-menu-item sms-item" onclick="closePhoneMenu();window.open('https://messages.google.com/web/conversations','_blank')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      💬 문자메시지
+    </div>`;
+  document.body.appendChild(menu);
+  const mw=menu.offsetWidth,mh=menu.offsetHeight;
+  let left=rect.left,top=rect.bottom+4;
+  if(left+mw>window.innerWidth)left=window.innerWidth-mw-8;
+  if(top+mh>window.innerHeight)top=rect.top-mh-4;
+  menu.style.left=left+'px';menu.style.top=top+'px';
+  setTimeout(()=>document.addEventListener('click',closePhoneMenu,{once:true}),50);
+}
+function closePhoneMenu(){const m=document.getElementById('phoneMenu');if(m)m.remove()}
 function fmtCur(n){return n?new Intl.NumberFormat('ko-KR').format(n)+'원':'0원'}
 function fmtEduHours(v){const n=Number(v)||0;const h=Math.floor(n);const m=Math.round((n-h)*60);if(h&&m)return h+'시간 '+m+'분';if(h)return h+'시간';if(m)return m+'분';return '';}
 function fmtDate(s){if(!s)return'';return(s.includes('T')?s.split('T')[0]:s).replace(/-/g,'.')}
