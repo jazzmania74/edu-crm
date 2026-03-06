@@ -834,9 +834,10 @@ async function handleInlineSave(id){
   // 저장 전에 현재 목록에서 다음 항목 ID를 미리 찾아둠
   const curIdx=state.filteredData.findIndex(d=>d.id===id);
   const nextItem=(curIdx!==-1 && curIdx<state.filteredData.length-1)?state.filteredData[curIdx+1]:null;
-  const action=state.isNew?'add':'update';
+  const action=item._isClone?'add':'update';
   const saved=await saveToSheet(action,item);
   if(saved){
+    delete item._isClone;
     const i=state.data.findIndex(d=>d.id===item.id);if(i!==-1)state.data[i]={...item};
     state.editingItem=null;state.isNew=false;applyFilters();
     // 다음 영업기회가 있으면 해당 카드로 스크롤 (수정탭 열지 않음)
@@ -1070,12 +1071,12 @@ function cloneOpp(id){
   const clone={...orig,
     id:'crm_'+Date.now().toString().slice(-6),
     createdAt:now.toISOString(),updatedAt:now.toISOString(),
-    stageId:'inquiry',stageDate:ds
+    stageId:'inquiry',stageDate:ds,
+    _isClone:true
   };
   // 원본 바로 뒤에 삽입
   const idx=state.data.findIndex(d=>d.id===id);
   if(idx!==-1){state.data.splice(idx+1,0,clone)}else{state.data.push(clone)}
-  state.isNew=true;
   applyFilters();
   // 복제 카드로 스크롤 후 수정탭 열기
   setTimeout(()=>{
