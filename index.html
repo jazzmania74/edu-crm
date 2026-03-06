@@ -799,8 +799,8 @@ function renderInlineEdit(safeId){
   if(!panel||!item)return;
   let h='';
   h+=`<div style="margin-bottom:16px"><div class="stage-selector">`;
-  STAGES.forEach(s=>{
-    const sel=item.stageId===s.id;
+  PIPELINE.forEach(s=>{
+    const sel=item.stageId===s.id || (PIPELINE_ALIAS[item.stageId]===s.id);
     h+=`<div class="stage-option ${sel?'selected':''}" data-stage="${s.id}" style="${sel?`background:${s.color};color:#fff;border-color:${s.color}`:''}" onclick="selectStage('${s.id}')">${s.label}</div>`;
   });
   h+=`</div></div>`;
@@ -920,8 +920,8 @@ function renderForm(){
   document.getElementById('formTitle').textContent=state.isNew?'새 영업기회':item.company+' - '+item.training;
   let h='';
   h+=`<div style="margin-bottom:16px"><div class="stage-selector">`;
-  STAGES.forEach(s=>{
-    const sel=item.stageId===s.id;
+  PIPELINE.forEach(s=>{
+    const sel=item.stageId===s.id || (PIPELINE_ALIAS[item.stageId]===s.id);
     h+=`<div class="stage-option ${sel?'selected':''}" data-stage="${s.id}" style="${sel?`background:${s.color};color:#fff;border-color:${s.color}`:''}" onclick="selectStage('${s.id}')">${s.label}</div>`;
   });
   h+=`</div></div>`;
