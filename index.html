@@ -99,6 +99,8 @@ a{color:var(--primary);text-decoration:none}
 .btn-edit:hover{background:#FEF08A}
 .btn-delete{background:#DC2626;color:#fff;border:1px solid #DC2626;font-weight:700}
 .btn-delete:hover{background:#B91C1C}
+.btn-clone{background:#9CA3AF;color:#fff;border:1px solid #9CA3AF;font-weight:700}
+.btn-clone:hover{background:#6B7280}
 
 /* Card Title */
 .opp-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--text)}
@@ -541,6 +543,7 @@ function renderList(){
       <span class="opp-stage-badge badge-${item.stageId}">${stage.label}</span>
       <div class="opp-top-actions">
         <button class="btn-sm btn-delete" onclick="event.stopPropagation();confirmDeleteCard('${item.id}')">&#128128; 삭제</button>
+        <button class="btn-sm btn-clone" onclick="event.stopPropagation();cloneOpp('${item.id}')">📋 복제</button>
         <button class="btn-sm btn-quote" onclick="event.stopPropagation();generateQuote('${item.id}')">&#128196; 견적서</button>
         <button class="btn-sm btn-edit" onclick="event.stopPropagation();toggleInlineEdit('${item.id}')">수정</button>
       </div>
@@ -831,10 +834,11 @@ async function handleInlineSave(id){
   // 저장 전에 현재 목록에서 다음 항목 ID를 미리 찾아둠
   const curIdx=state.filteredData.findIndex(d=>d.id===id);
   const nextItem=(curIdx!==-1 && curIdx<state.filteredData.length-1)?state.filteredData[curIdx+1]:null;
-  const saved=await saveToSheet('update',item);
+  const action=state.isNew?'add':'update';
+  const saved=await saveToSheet(action,item);
   if(saved){
     const i=state.data.findIndex(d=>d.id===item.id);if(i!==-1)state.data[i]={...item};
-    state.editingItem=null;applyFilters();
+    state.editingItem=null;state.isNew=false;applyFilters();
     // 다음 영업기회가 있으면 해당 카드로 스크롤 (수정탭 열지 않음)
     if(nextItem){
       setTimeout(()=>{
@@ -1057,6 +1061,28 @@ function confirmDeleteCard(id){
       }
     }
   });
+}
+
+// Clone opportunity
+function cloneOpp(id){
+  const orig=state.data.find(d=>d.id===id);if(!orig)return;
+  const now=new Date();const ds=now.toISOString().split('T')[0].replace(/-/g,'.');
+  const clone={...orig,
+    id:'crm_'+Date.now().toString().slice(-6),
+    createdAt:now.toISOString(),updatedAt:now.toISOString(),
+    stageId:'inquiry',stageDate:ds
+  };
+  // 원본 바로 뒤에 삽입
+  const idx=state.data.findIndex(d=>d.id===id);
+  if(idx!==-1){state.data.splice(idx+1,0,clone)}else{state.data.push(clone)}
+  state.isNew=true;
+  applyFilters();
+  // 복제 카드로 스크롤 후 수정탭 열기
+  setTimeout(()=>{
+    const el=document.getElementById('card-'+clone.id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>toggleInlineEdit(clone.id),300);
+  },200);
 }
 
 // ================================================================
