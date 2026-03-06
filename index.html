@@ -827,7 +827,7 @@ function readFormValues(item){
   const keys=['contact','company','contactPhone','contactEmail','training','title','eduDate','eduStartTime','eduHours','lectureFee','revenue','revType','registrant','coInstructor','coCommission','note'];
   const commaKeys=['lectureFee','revenue'];
   const numKeys=['eduHours','coCommission'];
-  keys.forEach(k=>{const el=document.getElementById('field_'+k);if(el){let v=el.value;if(commaKeys.includes(k))v=parseComma(v);else if(numKeys.includes(k))v=Number(v)||0;item[k]=v}});
+  keys.forEach(k=>{const el=document.getElementById('field_'+k);if(el){let v=el.value;if(commaKeys.includes(k))v=parseComma(v);else if(numKeys.includes(k))v=Number(v)||0;else if(k==='eduDate'&&v)v=v.replace(/-/g,'.');item[k]=v}});
   item.instructor='김종혁';
   if(!item.title&&item.company&&item.training)item.title=item.company+'/'+item.training;
   const caY=document.getElementById('field_caY'),caM=document.getElementById('field_caM'),caD=document.getElementById('field_caD');
