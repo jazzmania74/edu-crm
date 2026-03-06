@@ -146,16 +146,16 @@ a{color:var(--primary);text-decoration:none}
 .opp-note-toggle button:hover{background:var(--bg)}
 
 /* Stage Badge Colors */
-.badge-inquiry{background:#EFF6FF;color:#2563EB}
-.badge-curriculum{background:#F5F3FF;color:#7C3AED}
-.badge-proposal{background:#EEF2FF;color:#4F46E5}
-.badge-quote1{background:#FFFBEB;color:#D97706}
-.badge-quote2{background:#FFF7ED;color:#EA580C}
-.badge-fail{background:#F3F4F6;color:#6B7280}
-.badge-rejected{background:#FEF2F2;color:#DC2626}
-.badge-lost{background:#F3F4F6;color:#6B7280}
-.badge-won{background:#ECFDF5;color:#059669}
-.badge-success{background:#ECFDF5;color:#047857}
+.badge-inquiry{background:#FEFCE8;color:#A16207}
+.badge-curriculum{background:#FFF7ED;color:#C2410C}
+.badge-proposal{background:#FFF7ED;color:#C2410C}
+.badge-quote1{background:#FEF2F2;color:#EF4444}
+.badge-quote2{background:#FEF2F2;color:#B91C1C}
+.badge-fail{background:#F3F4F6;color:#000000}
+.badge-rejected{background:#F0F9FF;color:#0284C7}
+.badge-lost{background:#F3F4F6;color:#000000}
+.badge-won{background:#EFF6FF;color:#2563EB}
+.badge-success{background:#FDF2F8;color:#DB2777}
 
 /* ===== FORM PANEL ===== */
 .form-panel{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
@@ -336,29 +336,29 @@ const SHEET_ID = '1CFQjZ9x72Uw8bi9AItP0IXhzVk8N81MeVlNimbQynvo';
 const SHEET_GID = '970813333';
 
 const STAGES = [
-  { id:'inquiry',    label:'교육문의',       color:'#2563EB', bg:'#EFF6FF' },
-  { id:'curriculum', label:'커리큘럼제안',   color:'#7C3AED', bg:'#F5F3FF' },
-  { id:'proposal',   label:'제안서발송',     color:'#4F46E5', bg:'#EEF2FF' },
-  { id:'quote1',     label:'1차견적',        color:'#D97706', bg:'#FFFBEB' },
-  { id:'quote2',     label:'2차견적',        color:'#EA580C', bg:'#FFF7ED' },
-  { id:'fail',       label:'계약실패(연기)', color:'#9CA3AF', bg:'#F3F4F6' },
-  { id:'rejected',   label:'계약거절(전달)', color:'#EF4444', bg:'#FEF2F2' },
-  { id:'lost',       label:'계약소멸',       color:'#6B7280', bg:'#F3F4F6' },
-  { id:'won',        label:'계약성공',       color:'#10B981', bg:'#ECFDF5' },
-  { id:'success',    label:'입금완료',       color:'#047857', bg:'#ECFDF5' },
+  { id:'inquiry',    label:'교육문의',       color:'#FACC15', bg:'#FEFCE8' },
+  { id:'curriculum', label:'커리큘럼제안',   color:'#FB923C', bg:'#FFF7ED' },
+  { id:'proposal',   label:'제안서발송',     color:'#FB923C', bg:'#FFF7ED' },
+  { id:'quote1',     label:'1차견적',        color:'#EF4444', bg:'#FEF2F2' },
+  { id:'quote2',     label:'2차견적',        color:'#B91C1C', bg:'#FEF2F2' },
+  { id:'fail',       label:'계약실패(연기)', color:'#000000', bg:'#F3F4F6' },
+  { id:'rejected',   label:'계약거절(전달)', color:'#7DD3FC', bg:'#F0F9FF' },
+  { id:'lost',       label:'계약소멸',       color:'#000000', bg:'#F3F4F6' },
+  { id:'won',        label:'계약성공',       color:'#60A5FA', bg:'#EFF6FF' },
+  { id:'success',    label:'입금완료',       color:'#F472B6', bg:'#FDF2F8' },
 ];
 const STAGE_MAP = {}; STAGES.forEach(s => STAGE_MAP[s.id] = s);
 
 // Pipeline bar stages (8 main stages shown in each card)
 const PIPELINE = [
-  { id:'inquiry',    label:'교육문의',      color:'#2563EB' },
-  { id:'curriculum', label:'커리큘럼제안',   color:'#7C3AED' },
-  { id:'quote1',     label:'1차견적',       color:'#D97706' },
-  { id:'quote2',     label:'2차견적',       color:'#EA580C' },
-  { id:'fail',       label:'계약실패(연기)', color:'#9CA3AF' },
-  { id:'rejected',   label:'계약거절(전달)', color:'#EF4444' },
-  { id:'won',        label:'계약성공',      color:'#10B981' },
-  { id:'success',    label:'입금완료',      color:'#047857' },
+  { id:'inquiry',    label:'교육문의',      color:'#FACC15' },
+  { id:'curriculum', label:'커리큘럼제안',   color:'#FB923C' },
+  { id:'quote1',     label:'1차견적',       color:'#EF4444' },
+  { id:'quote2',     label:'2차견적',       color:'#B91C1C' },
+  { id:'fail',       label:'계약실패(연기)', color:'#000000' },
+  { id:'rejected',   label:'계약거절(전달)', color:'#7DD3FC' },
+  { id:'won',        label:'계약성공',      color:'#60A5FA' },
+  { id:'success',    label:'입금완료',      color:'#F472B6' },
 ];
 // Map extra stages to pipeline display
 const PIPELINE_ALIAS = { proposal:'curriculum', lost:'fail' };
