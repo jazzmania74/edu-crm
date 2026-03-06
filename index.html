@@ -97,8 +97,8 @@ a{color:var(--primary);text-decoration:none}
 .btn-quote:hover{background:var(--primary-dark)}
 .btn-edit{background:#FEF9C3;color:var(--text);border:1px solid #FACC15;font-weight:700}
 .btn-edit:hover{background:#FEF08A}
-.btn-delete{background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;font-weight:700}
-.btn-delete:hover{background:#FECACA}
+.btn-delete{background:#DC2626;color:#fff;border:1px solid #DC2626;font-weight:700}
+.btn-delete:hover{background:#B91C1C}
 
 /* Card Title */
 .opp-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--text)}
@@ -539,8 +539,8 @@ function renderList(){
     h+=`<div class="opp-top">
       <span class="opp-stage-badge badge-${item.stageId}">${stage.label}</span>
       <div class="opp-top-actions">
-        <button class="btn-sm btn-quote" onclick="event.stopPropagation();generateQuote('${item.id}')">&#128196; 견적서</button>
         <button class="btn-sm btn-delete" onclick="event.stopPropagation();confirmDeleteCard('${item.id}')">&#128128; 삭제</button>
+        <button class="btn-sm btn-quote" onclick="event.stopPropagation();generateQuote('${item.id}')">&#128196; 견적서</button>
         <button class="btn-sm btn-edit" onclick="event.stopPropagation();toggleInlineEdit('${item.id}')">수정</button>
       </div>
     </div>`;
