@@ -345,14 +345,14 @@ const STAGE_MAP = {}; STAGES.forEach(s => STAGE_MAP[s.id] = s);
 
 // Pipeline bar stages (8 main stages shown in each card)
 const PIPELINE = [
-  { id:'inquiry',    label:'교육문의',      color:'#FACC15' },
-  { id:'curriculum', label:'커리큘럼제안',   color:'#F97316' },
-  { id:'quote1',     label:'1차견적',       color:'#F87171' },
-  { id:'quote2',     label:'2차견적',       color:'#991B1B' },
-  { id:'fail',       label:'계약실패(연기)', color:'#4B5563' },
-  { id:'rejected',   label:'계약거절(전달)', color:'#38BDF8' },
-  { id:'won',        label:'계약성공',      color:'#1D4ED8' },
-  { id:'success',    label:'입금완료',      color:'#EC4899' },
+  { id:'inquiry',    label:'교육문의',      color:'#2563EB' },
+  { id:'curriculum', label:'커리큘럼제안',   color:'#7C3AED' },
+  { id:'quote1',     label:'1차견적',       color:'#D97706' },
+  { id:'quote2',     label:'2차견적',       color:'#EA580C' },
+  { id:'fail',       label:'계약실패(연기)', color:'#9CA3AF' },
+  { id:'rejected',   label:'계약거절(전달)', color:'#EF4444' },
+  { id:'won',        label:'계약성공',      color:'#10B981' },
+  { id:'success',    label:'입금완료',      color:'#047857' },
 ];
 // Map extra stages to pipeline display
 const PIPELINE_ALIAS = { proposal:'curriculum', lost:'fail' };
@@ -520,7 +520,7 @@ function renderList(){
   let h='<div class="opp-list">';
   state.filteredData.forEach(item=>{
     const stage=STAGE_MAP[item.stageId]||STAGES[0];
-    h+=`<div class="opp-card">`;
+    h+=`<div class="opp-card" id="card-${item.id}">`;
     // Header
     h+=`<div class="opp-top">
       <span class="opp-stage-badge badge-${item.stageId}">${stage.label}</span>
@@ -818,9 +818,12 @@ async function handleInlineSave(id){
   if(saved){
     const i=state.data.findIndex(d=>d.id===item.id);if(i!==-1)state.data[i]={...item};
     state.editingItem=null;applyFilters();
-    // 다음 영업기회가 있으면 자동으로 열기
+    // 다음 영업기회가 있으면 해당 카드로 스크롤 (수정탭 열지 않음)
     if(nextItem){
-      setTimeout(()=>toggleInlineEdit(nextItem.id),200);
+      setTimeout(()=>{
+        const el=document.getElementById('card-'+nextItem.id);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+      },200);
     } else {
       showToast('마지막 항목입니다.','info');
     }
