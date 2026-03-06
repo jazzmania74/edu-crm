@@ -783,8 +783,8 @@ function toggleInlineEdit(id){
   const panel=document.getElementById('editpanel_'+safeId);
   if(!panel)return;
   const isOpen=panel.classList.contains('open');
-  // Close all other panels
-  document.querySelectorAll('.opp-edit-panel.open').forEach(el=>el.classList.remove('open'));
+  // Close all other panels and clear their content to prevent duplicate IDs
+  document.querySelectorAll('.opp-edit-panel.open').forEach(el=>{el.classList.remove('open');el.innerHTML='';});
   if(!isOpen){
     const item=state.data.find(d=>d.id===id);if(!item)return;
     state.editingItem={...item};state.isNew=false;
@@ -821,7 +821,7 @@ function renderInlineEdit(safeId){
 
 function closeInlineEdit(safeId){
   const panel=document.getElementById('editpanel_'+safeId);
-  if(panel)panel.classList.remove('open');
+  if(panel){panel.classList.remove('open');panel.innerHTML='';}
   state.editingItem=null;
 }
 
