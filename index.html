@@ -454,7 +454,8 @@ function applyFilters(){
   if(sp.stage)d=d.filter(x=>x.stageId===sp.stage);
   if(sp.instructor)d=d.filter(x=>x.instructor.toLowerCase().includes(sp.instructor.toLowerCase()));
   if(sp.registrant)d=d.filter(x=>x.registrant.toLowerCase().includes(sp.registrant.toLowerCase()));
-  d.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  const normDate=s=>(s||'').replace(/\./g,'-').slice(0,10);
+  d.sort((a,b)=>normDate(b.createdAt).localeCompare(normDate(a.createdAt)));
   state.filteredData=d;
   renderStats();renderList();
 }
