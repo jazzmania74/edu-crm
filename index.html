@@ -296,12 +296,12 @@ a{color:var(--primary);text-decoration:none}
       </div>
       <div class="search-body" id="searchBody">
         <div class="search-grid">
-          <div class="search-group"><label>회사명</label><input type="text" id="srcCompany" placeholder="회사명"></div>
-          <div class="search-group"><label>담당자</label><input type="text" id="srcContact" placeholder="담당자"></div>
-          <div class="search-group"><label>교육과정</label><input type="text" id="srcTraining" placeholder="교육과정"></div>
+          <div class="search-group"><label>회사명</label><input type="text" id="srcCompany" placeholder="회사명" onkeydown="if(event.key==='Enter')doSearch()"></div>
+          <div class="search-group"><label>담당자</label><input type="text" id="srcContact" placeholder="담당자" onkeydown="if(event.key==='Enter')doSearch()"></div>
+          <div class="search-group"><label>교육과정</label><input type="text" id="srcTraining" placeholder="교육과정" onkeydown="if(event.key==='Enter')doSearch()"></div>
           <div class="search-group"><label>단계</label><select id="srcStage"><option value="">전체</option></select></div>
-          <div class="search-group"><label>강사</label><input type="text" id="srcInstructor" placeholder="강사"></div>
-          <div class="search-group"><label>등록자</label><input type="text" id="srcRegistrant" placeholder="등록자"></div>
+          <div class="search-group"><label>강사</label><input type="text" id="srcInstructor" placeholder="강사" onkeydown="if(event.key==='Enter')doSearch()"></div>
+          <div class="search-group"><label>등록자</label><input type="text" id="srcRegistrant" placeholder="등록자" onkeydown="if(event.key==='Enter')doSearch()"></div>
         </div>
         <div class="search-actions">
           <button class="btn btn-outline btn-sm" onclick="clearSearch()">초기화</button>
